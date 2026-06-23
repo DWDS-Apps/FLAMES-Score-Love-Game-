@@ -20,7 +20,7 @@
 - [x] Result history list (saved locally)
 - [x] Share result as image/text
 - [x] Sound effects (tap, reveal)
-- [ ] Multi-language support (English + Filipino)
+- [x] Multi-language support (English + Filipino)
 
 ## Phase 4: Quality
 - [x] Widget tests (30 passing)

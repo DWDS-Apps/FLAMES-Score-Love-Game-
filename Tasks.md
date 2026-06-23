@@ -35,4 +35,4 @@
 - [x] Result history with local storage (shared_preferences)
 - [x] Share sheet integration (share_plus)
 - [x] Sound effects (flutter_beep or audioplayers)
-- [ ] i18n: English + Filipino locale
+- [x] i18n: English + Filipino locale
