@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import '../constants/app_constants.dart';
 import '../models/flames_game.dart';
 import '../models/result_entry.dart';
+import '../services/audio_service.dart';
 import '../services/result_history_service.dart';
 import '../widgets/heart_particles.dart';
 import '../widgets/result_card.dart';
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String? _name1;
   String? _name2;
   final _historyService = ResultHistoryService();
+  final _audioService = AudioService.instance;
 
   late final AnimationController _resultController;
   late final Animation<double> _resultScale;
@@ -98,12 +100,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       );
     }
 
-    // Animate result entrance
+    // Animations result entrance
     _resultController.forward(from: 0);
+
+    // Play reveal sound effect
+    _audioService.playReveal();
   }
 
   /// Resets the form and result state.
   void _reset() {
+    _audioService.playButtonTap();
     _resultController.reset();
     setState(() {
       _resultLetter = null;
@@ -116,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   /// Shares the current result via the system share sheet.
   void _shareResult() {
+    _audioService.playButtonTap();
     if (_resultLetter == null || _name1 == null || _name2 == null) return;
 
     final meaning = FlamesGame.getMeaning(_resultLetter!);
@@ -158,11 +165,13 @@ Made with FLAMES Love Game ❤️''';
 
   /// Clears the first name field.
   void _clearName1() {
+    _audioService.playTap();
     _name1Controller.clear();
   }
 
   /// Clears the second name field.
   void _clearName2() {
+    _audioService.playTap();
     _name2Controller.clear();
   }
 
@@ -174,18 +183,21 @@ Made with FLAMES Love Game ❤️''';
 
   /// Fills the first name field with a random name.
   void _fillRandomName1() {
+    _audioService.playButtonTap();
     _name1Controller.text = _randomName();
     setState(() {});
   }
 
   /// Fills the second name field with a random name.
   void _fillRandomName2() {
+    _audioService.playButtonTap();
     _name2Controller.text = _randomName();
     setState(() {});
   }
 
   /// Shows a modal bottom sheet with the result history.
   Future<void> _showHistory() async {
+    _audioService.playButtonTap();
     final history = await _historyService.getHistory();
 
     if (!mounted) return;
