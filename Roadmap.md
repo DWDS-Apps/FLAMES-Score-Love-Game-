@@ -24,10 +24,10 @@
 
 ## Phase 4: Quality
 - [x] Widget tests (30 passing)
-- [ ] Integration tests
-- [ ] Accessibility audit (labels, contrast, touch targets)
-- [ ] Performance profiling (frame rates, startup)
-- [ ] App store listing assets (screenshots, description)
+- [x] Integration tests
+- [x] Accessibility audit (labels, contrast, touch targets)
+- [x] Performance profiling (frame rates, startup)
+- [x] App store listing assets (screenshots, description)
 
 ## Phase 5: Release
 - [x] Android release build (AAB)

@@ -442,35 +442,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Spacer(),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.favorite_rounded,
-                        size: 48,
-                        color: colorScheme.primary.withValues(alpha: 0.7),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppConstants.headerTitle,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900,
-                          color: colorScheme.primary,
-                          letterSpacing: 8,
+                  Semantics(
+                    header: true,
+                    label: AppConstants.headerSemanticsTitle,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Semantics(
+                          excludeSemantics: true,
+                          child: Icon(
+                            Icons.favorite_rounded,
+                            size: 48,
+                            color: colorScheme.primary.withValues(alpha: 0.7),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.headerSubtitle,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurfaceVariant,
-                          letterSpacing: 2,
+                        const SizedBox(height: 8),
+                        Text(
+                          AppConstants.headerTitle,
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w900,
+                            color: colorScheme.primary,
+                            letterSpacing: 8,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.headerSubtitle,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: colorScheme.onSurfaceVariant,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const Spacer(),
                   // History, locale, and dark mode toggle buttons
@@ -539,7 +546,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   /// Builds the FLAMES legend row with letter, emoji, and localized label.
   Widget _buildFlamesLegend(ColorScheme colorScheme, AppLocalizations l10n) {
-    return Wrap(
+    return Semantics(
+      label: 'FLAMES legend',
+      child: Wrap(
       spacing: 8,
       runSpacing: 8,
       alignment: WrapAlignment.center,
@@ -577,6 +586,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         );
       }).toList(),
+      ),
     );
   }
 
@@ -634,12 +644,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
 
           // Heart icon between fields
-          Center(
-            child: Icon(
-              Icons.favorite,
-              size: 28,
-              color: colorScheme.primary.withValues(alpha: 0.5),
-              key: const ValueKey(AppConstants.heartIconKey),
+          Semantics(
+            excludeSemantics: true,
+            child: Center(
+              child: Icon(
+                Icons.favorite,
+                size: 28,
+                color: colorScheme.primary.withValues(alpha: 0.5),
+                key: const ValueKey(AppConstants.heartIconKey),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -728,93 +741,98 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   /// Builds the animated result section with heart particles.
   Widget _buildResult(ColorScheme colorScheme, AppLocalizations l10n) {
-    return Column(
-      children: [
-        // Heart particles overlay
-        SizedBox(
-          height: 380,
-          child: Stack(
-            alignment: Alignment.center,
+    return Semantics(
+      label: 'FLAMES calculation result',
+      child: Column(
+        children: [
+          // Heart particles overlay
+          SizedBox(
+            height: 380,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Animated result card
+                MergeSemantics(
+                  child: FadeTransition(
+                    opacity: _resultFade,
+                    child: ScaleTransition(
+                      scale: _resultScale,
+                      child: ResultCard(
+                        key: const ValueKey(AppConstants.resultCardKey),
+                        letter: _resultLetter!,
+                        name1: _name1!,
+                        name2: _name2!,
+                        getMeaning: _getLocalizedMeaning,
+                      ),
+                    ),
+                  ),
+                ),
+                // Floating heart particles
+                IgnorePointer(
+                  child: HeartParticles(
+                    heartColor: colorScheme.primary.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Action buttons: Try Again + Share
+          Row(
             children: [
-              // Animated result card
-              FadeTransition(
-                opacity: _resultFade,
-                child: ScaleTransition(
-                  scale: _resultScale,
-                  child: ResultCard(
-                    key: const ValueKey(AppConstants.resultCardKey),
-                    letter: _resultLetter!,
-                    name1: _name1!,
-                    name2: _name2!,
-                    getMeaning: _getLocalizedMeaning,
+              // Try Again button
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    key: const ValueKey(AppConstants.tryAgainButtonKey),
+                    onPressed: _reset,
+                    icon: const Icon(Icons.replay),
+                    label: Text(
+                      l10n.buttonTryAgain,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                      side: BorderSide(
+                        color: colorScheme.primary.withValues(alpha: 0.6),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              // Floating heart particles
-              IgnorePointer(
-                child: HeartParticles(
-                  heartColor: colorScheme.primary.withValues(alpha: 0.5),
+              const SizedBox(width: 12),
+              // Share button
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: FilledButton.icon(
+                    key: const ValueKey(AppConstants.shareButtonKey),
+                    onPressed: _shareResult,
+                    icon: const Icon(Icons.share_rounded),
+                    label: Text(
+                      l10n.buttonShare,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 16),
-
-        // Action buttons: Try Again + Share
-        Row(
-          children: [
-            // Try Again button
-            Expanded(
-              child: SizedBox(
-                height: 52,
-                child: OutlinedButton.icon(
-                  key: const ValueKey(AppConstants.tryAgainButtonKey),
-                  onPressed: _reset,
-                  icon: const Icon(Icons.replay),
-                  label: Text(
-                    l10n.buttonTryAgain,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colorScheme.primary,
-                    side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.6),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Share button
-            Expanded(
-              child: SizedBox(
-                height: 52,
-                child: FilledButton.icon(
-                  key: const ValueKey(AppConstants.shareButtonKey),
-                  onPressed: _shareResult,
-                  icon: const Icon(Icons.share_rounded),
-                  label: Text(
-                    l10n.buttonShare,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 40),
-      ],
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 }

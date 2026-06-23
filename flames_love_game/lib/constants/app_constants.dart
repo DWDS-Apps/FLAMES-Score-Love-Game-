@@ -11,6 +11,9 @@ class AppConstants {
   /// The main header text.
   static const String headerTitle = 'FLAMES';
 
+  /// Semantic label for the header area (for screen readers).
+  static const String headerSemanticsTitle = 'FLAMES Love Score Game header';
+
   /// The subtitle below the header.
   static const String headerSubtitle = 'Love Score Game';
 

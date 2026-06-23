@@ -4,6 +4,12 @@
 
 ## Current Sprint
 
+### Phase 4: Quality ✅
+- [x] Integration tests (integration_test/ with full app flow)
+- [x] Accessibility audit (Semantics labels, decorative exclusions, semantic grouping)
+- [x] Performance profiling (tools/performance_profiling.md)
+- [x] App store listing assets (assets/store_screenshots/)
+
 ### Polish & UX
 - [x] Add animated transition when result card appears (fade + scale)
 - [x] Add haptic feedback on "Calculate" tap
