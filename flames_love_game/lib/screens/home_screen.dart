@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../constants/app_constants.dart';
+import '../l10n/app_localizations.dart';
 import '../models/flames_game.dart';
 import '../models/result_entry.dart';
 import '../services/audio_service.dart';
@@ -13,7 +14,8 @@ import '../widgets/result_card.dart';
 /// The main screen of the FLAMES Love Game.
 ///
 /// Displays the FLAMES legend, input form for two names, and the result card
-/// with an animated reveal and celebratory heart particles.
+/// with an animated reveal, celebratory heart particles, and sound effects.
+/// Supports English and Filipino localization with a persistent toggle.
 class HomeScreen extends StatefulWidget {
   /// Whether dark mode is currently active.
   final bool isDarkMode;
@@ -21,11 +23,19 @@ class HomeScreen extends StatefulWidget {
   /// Callback invoked when the user toggles dark mode.
   final VoidCallback onToggleDarkMode;
 
+  /// The current locale for localization.
+  final Locale locale;
+
+  /// Callback invoked when the user toggles the locale.
+  final VoidCallback onToggleLocale;
+
   /// Creates the home screen.
   const HomeScreen({
     super.key,
     this.isDarkMode = false,
     required this.onToggleDarkMode,
+    required this.locale,
+    required this.onToggleLocale,
   });
 
   @override
@@ -72,6 +82,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  /// Returns the localized meaning for a FLAMES letter.
+  Map<String, String>? _getLocalizedMeaning(String letter) {
+    return AppLocalizations.of(context).flamesMeanings[letter];
+  }
+
   /// Validates inputs, calculates FLAMES result, and triggers animations.
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
@@ -100,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       );
     }
 
-    // Animations result entrance
+    // Animate result entrance
     _resultController.forward(from: 0);
 
     // Play reveal sound effect
@@ -125,40 +140,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _audioService.playButtonTap();
     if (_resultLetter == null || _name1 == null || _name2 == null) return;
 
-    final meaning = FlamesGame.getMeaning(_resultLetter!);
+    final l10n = AppLocalizations.of(context);
+    final meaning = _getLocalizedMeaning(_resultLetter!);
     if (meaning == null) return;
 
-    final text = '''
-💕 FLAMES Love Game Result 💕
-
-$_name1 ♥ $_name2
-
-Result: $_resultLetter — ${meaning['label']} ${meaning['emoji']}
-
-${meaning['description']}
-
-━━━━━━━━━━━━━━━━━━━━━━━
-Made with FLAMES Love Game ❤️''';
+    final text = l10n.shareResultText(
+      _name1!,
+      _name2!,
+      _resultLetter!,
+      meaning['label']!,
+      meaning['emoji']!,
+      meaning['description']!,
+    );
 
     Share.share(text.trim());
   }
 
   /// Shares a history [entry] via the system share sheet.
   void _shareEntry(ResultEntry entry) {
-    final meaning = FlamesGame.getMeaning(entry.resultLetter);
+    final l10n = AppLocalizations.of(context);
+    final meaning = _getLocalizedMeaning(entry.resultLetter);
     if (meaning == null) return;
 
-    final text = '''
-💕 FLAMES Love Game Result 💕
-
-${entry.name1} ♥ ${entry.name2}
-
-Result: ${entry.resultLetter} — ${meaning['label']} ${meaning['emoji']}
-
-${meaning['description']}
-
-━━━━━━━━━━━━━━━━━━━━━━━
-Made with FLAMES Love Game ❤️''';
+    final text = l10n.shareResultText(
+      entry.name1,
+      entry.name2,
+      entry.resultLetter,
+      meaning['label']!,
+      meaning['emoji']!,
+      meaning['description']!,
+    );
 
     Share.share(text.trim());
   }
@@ -216,6 +227,7 @@ Made with FLAMES Love Game ❤️''';
 
   /// Builds the history bottom sheet content.
   Widget _buildHistorySheet(BuildContext context, List<ResultEntry> history) {
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
 
     return DraggableScrollableSheet(
@@ -250,7 +262,7 @@ Made with FLAMES Love Game ❤️''';
                       color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 8),
                   Text(
-                    'Result History',
+                    l10n.historyTitle,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -267,7 +279,7 @@ Made with FLAMES Love Game ❤️''';
                         Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.delete_sweep, size: 18),
-                      label: const Text('Clear all'),
+                      label: Text(l10n.historyClearAll),
                       style: TextButton.styleFrom(
                         foregroundColor: colorScheme.error,
                       ),
@@ -294,7 +306,7 @@ Made with FLAMES Love Game ❤️''';
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'No results yet!',
+                          l10n.historyEmptyTitle,
                           style: TextStyle(
                             fontSize: 16,
                             color: colorScheme.onSurfaceVariant,
@@ -302,7 +314,7 @@ Made with FLAMES Love Game ❤️''';
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Calculate your first FLAMES result.',
+                          l10n.historyEmptySubtitle,
                           style: TextStyle(
                             fontSize: 13,
                             color: colorScheme.onSurfaceVariant
@@ -322,7 +334,7 @@ Made with FLAMES Love Game ❤️''';
                     itemBuilder: (context, index) {
                       final entry = history[index];
                       final meaning =
-                          FlamesGame.getMeaning(entry.resultLetter);
+                          _getLocalizedMeaning(entry.resultLetter);
                       final emoji = meaning?['emoji'] ?? '';
                       final label = meaning?['label'] ?? entry.resultLetter;
 
@@ -344,7 +356,7 @@ Made with FLAMES Love Game ❤️''';
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          '$emoji $label  •  ${_formatTimestamp(entry.timestamp)}',
+                          '$emoji $label  •  ${_formatTimestamp(entry.timestamp, l10n)}',
                           style: TextStyle(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
@@ -360,7 +372,7 @@ Made with FLAMES Love Game ❤️''';
                                 color: colorScheme.primary
                                     .withValues(alpha: 0.7),
                               ),
-                              tooltip: 'Share result',
+                              tooltip: l10n.shareTooltip,
                               onPressed: () {
                                 _shareEntry(entry);
                               },
@@ -398,15 +410,15 @@ Made with FLAMES Love Game ❤️''';
     );
   }
 
-  /// Formats a timestamp to a short, readable string.
-  String _formatTimestamp(DateTime dt) {
+  /// Formats a timestamp to a short, readable string using localized strings.
+  String _formatTimestamp(DateTime dt, AppLocalizations l10n) {
     final now = DateTime.now();
     final diff = now.difference(dt);
 
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inMinutes < 1) return l10n.timestampJustNow;
+    if (diff.inHours < 1) return l10n.timestampMinutesAgo(diff.inMinutes);
+    if (diff.inDays < 1) return l10n.timestampHoursAgo(diff.inHours);
+    if (diff.inDays < 7) return l10n.timestampDaysAgo(diff.inDays);
 
     // Otherwise show date
     return '${dt.month}/${dt.day}/${dt.year}';
@@ -414,6 +426,7 @@ Made with FLAMES Love Game ❤️''';
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -424,7 +437,7 @@ Made with FLAMES Love Game ❤️''';
             children: [
               const SizedBox(height: 32),
 
-              // Header row with theme toggle
+              // Header row with theme toggle and locale toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -449,7 +462,7 @@ Made with FLAMES Love Game ❤️''';
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        AppConstants.headerSubtitle,
+                        l10n.headerSubtitle,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -460,7 +473,7 @@ Made with FLAMES Love Game ❤️''';
                     ],
                   ),
                   const Spacer(),
-                  // Dark mode toggle and history buttons
+                  // History, locale, and dark mode toggle buttons
                   Padding(
                     padding: const EdgeInsets.only(bottom: 48),
                     child: Row(
@@ -469,8 +482,25 @@ Made with FLAMES Love Game ❤️''';
                         IconButton(
                           key: const ValueKey(AppConstants.historyButtonKey),
                           icon: const Icon(Icons.history_rounded),
-                          tooltip: 'Result history',
+                          tooltip: l10n.historyTooltip,
                           onPressed: _showHistory,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        // Locale toggle button
+                        IconButton(
+                          icon: Text(
+                            widget.locale.languageCode.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          tooltip: widget.locale.languageCode == 'en'
+                              ? l10n.switchToFilipino
+                              : l10n.switchToEnglish,
+                          onPressed: widget.onToggleLocale,
                           color: colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 4),
@@ -481,8 +511,8 @@ Made with FLAMES Love Game ❤️''';
                                 : Icons.dark_mode,
                           ),
                           tooltip: widget.isDarkMode
-                              ? 'Switch to light mode'
-                              : 'Switch to dark mode',
+                              ? l10n.lightModeTooltip
+                              : l10n.darkModeTooltip,
                           onPressed: widget.onToggleDarkMode,
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -494,12 +524,12 @@ Made with FLAMES Love Game ❤️''';
               const SizedBox(height: 32),
 
               // Legend: FLAMES letters
-              _buildFlamesLegend(colorScheme),
+              _buildFlamesLegend(colorScheme, l10n),
               const SizedBox(height: 28),
 
               // Form or Result
-              if (_resultLetter == null) _buildForm(colorScheme),
-              if (_resultLetter != null) _buildResult(colorScheme),
+              if (_resultLetter == null) _buildForm(colorScheme, l10n),
+              if (_resultLetter != null) _buildResult(colorScheme, l10n),
             ],
           ),
         ),
@@ -507,13 +537,14 @@ Made with FLAMES Love Game ❤️''';
     );
   }
 
-  /// Builds the FLAMES legend row with letter, emoji, and label.
-  Widget _buildFlamesLegend(ColorScheme colorScheme) {
+  /// Builds the FLAMES legend row with letter, emoji, and localized label.
+  Widget _buildFlamesLegend(ColorScheme colorScheme, AppLocalizations l10n) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       alignment: WrapAlignment.center,
       children: AppConstants.legendItems.map((item) {
+        final localizedLabel = l10n.legendLabels[item.$1] ?? item.$2;
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -536,7 +567,7 @@ Made with FLAMES Love Game ❤️''';
               ),
               const SizedBox(width: 4),
               Text(
-                item.$2,
+                localizedLabel,
                 style: TextStyle(
                   fontSize: 13,
                   color: colorScheme.onSurfaceVariant,
@@ -550,7 +581,7 @@ Made with FLAMES Love Game ❤️''';
   }
 
   /// Builds the input form with name fields, heart icon, and calculate button.
-  Widget _buildForm(ColorScheme colorScheme) {
+  Widget _buildForm(ColorScheme colorScheme, AppLocalizations l10n) {
     return Form(
       key: _formKey,
       child: Column(
@@ -562,8 +593,8 @@ Made with FLAMES Love Game ❤️''';
             textCapitalization: TextCapitalization.words,
             maxLength: AppConstants.maxNameLength,
             decoration: InputDecoration(
-              labelText: AppConstants.labelName1,
-              hintText: AppConstants.hintName1,
+              labelText: l10n.labelName1,
+              hintText: l10n.hintName1,
               prefixIcon: const Icon(Icons.person),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -571,7 +602,7 @@ Made with FLAMES Love Game ❤️''';
                   IconButton(
                     key: const ValueKey(AppConstants.name1RandomKey),
                     icon: const Icon(Icons.shuffle, size: 18),
-                    tooltip: 'Random name',
+                    tooltip: l10n.randomNameTooltip,
                     onPressed: _fillRandomName1,
                   ),
                   if (_name1Controller.text.isNotEmpty)
@@ -593,7 +624,7 @@ Made with FLAMES Love Game ❤️''';
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return AppConstants.validationEmpty;
+                return l10n.validationEmpty;
               }
               return null;
             },
@@ -620,8 +651,8 @@ Made with FLAMES Love Game ❤️''';
             textCapitalization: TextCapitalization.words,
             maxLength: AppConstants.maxNameLength,
             decoration: InputDecoration(
-              labelText: AppConstants.labelName2,
-              hintText: AppConstants.hintName2,
+              labelText: l10n.labelName2,
+              hintText: l10n.hintName2,
               prefixIcon: const Icon(Icons.favorite_border),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -629,7 +660,7 @@ Made with FLAMES Love Game ❤️''';
                   IconButton(
                     key: const ValueKey(AppConstants.name2RandomKey),
                     icon: const Icon(Icons.shuffle, size: 18),
-                    tooltip: 'Random name',
+                    tooltip: l10n.randomNameTooltip,
                     onPressed: _fillRandomName2,
                   ),
                   if (_name2Controller.text.isNotEmpty)
@@ -651,7 +682,7 @@ Made with FLAMES Love Game ❤️''';
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return AppConstants.validationEmpty;
+                return l10n.validationEmpty;
               }
               return null;
             },
@@ -676,14 +707,14 @@ Made with FLAMES Love Game ❤️''';
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.auto_awesome),
-                  SizedBox(width: 8),
+                  const Icon(Icons.auto_awesome),
+                  const SizedBox(width: 8),
                   Text(
-                    AppConstants.buttonCalculate,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    l10n.buttonCalculate,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -696,7 +727,7 @@ Made with FLAMES Love Game ❤️''';
   }
 
   /// Builds the animated result section with heart particles.
-  Widget _buildResult(ColorScheme colorScheme) {
+  Widget _buildResult(ColorScheme colorScheme, AppLocalizations l10n) {
     return Column(
       children: [
         // Heart particles overlay
@@ -715,6 +746,7 @@ Made with FLAMES Love Game ❤️''';
                     letter: _resultLetter!,
                     name1: _name1!,
                     name2: _name2!,
+                    getMeaning: _getLocalizedMeaning,
                   ),
                 ),
               ),
@@ -740,9 +772,9 @@ Made with FLAMES Love Game ❤️''';
                   key: const ValueKey(AppConstants.tryAgainButtonKey),
                   onPressed: _reset,
                   icon: const Icon(Icons.replay),
-                  label: const Text(
-                    AppConstants.buttonTryAgain,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  label: Text(
+                    l10n.buttonTryAgain,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: colorScheme.primary,
@@ -765,9 +797,9 @@ Made with FLAMES Love Game ❤️''';
                   key: const ValueKey(AppConstants.shareButtonKey),
                   onPressed: _shareResult,
                   icon: const Icon(Icons.share_rounded),
-                  label: const Text(
-                    AppConstants.buttonShare,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  label: Text(
+                    l10n.buttonShare,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: colorScheme.primary,

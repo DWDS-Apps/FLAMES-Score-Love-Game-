@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flames_love_game/l10n/app_localizations.dart';
 import 'package:flames_love_game/models/flames_game.dart';
 import 'package:flames_love_game/screens/home_screen.dart';
 import 'package:flames_love_game/widgets/result_card.dart';
 
 Widget createHomeScreen() {
   return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+    ],
+    supportedLocales: AppLocalizations.supportedLocales,
     home: HomeScreen(
+      locale: const Locale('en', 'US'),
+      onToggleLocale: () {},
       onToggleDarkMode: () {},
     ),
   );
@@ -16,6 +26,7 @@ void main() {
   group('HomeScreen Widget Tests', () {
     testWidgets('renders the FLAMES header and legend', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Header should be present
       expect(find.text('FLAMES'), findsOneWidget);
@@ -38,6 +49,7 @@ void main() {
     testWidgets('shows two text fields and calculate button initially',
         (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Input fields
       expect(find.byType(TextFormField), findsNWidgets(2));
@@ -50,6 +62,7 @@ void main() {
 
     testWidgets('validates empty fields', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Tap calculate without entering anything
       await tester.tap(find.text('Calculate FLAMES'));
@@ -61,6 +74,7 @@ void main() {
 
     testWidgets('shows result after entering names', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Enter names
       await tester.enterText(
@@ -87,6 +101,7 @@ void main() {
 
     testWidgets('try again resets to form', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Enter names and calculate
       await tester.enterText(
@@ -122,6 +137,7 @@ void main() {
 
     testWidgets('clear buttons appear when text is entered', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // No clear buttons initially
       expect(find.byIcon(Icons.close), findsNothing);
@@ -139,6 +155,7 @@ void main() {
 
     testWidgets('dark mode toggle button is present', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Dark mode toggle should be present
       expect(find.byIcon(Icons.dark_mode), findsOneWidget);
@@ -147,13 +164,22 @@ void main() {
     testWidgets('tapping dark mode toggles icon', (tester) async {
       bool toggled = false;
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         home: HomeScreen(
+          locale: const Locale('en', 'US'),
+          onToggleLocale: () {},
           isDarkMode: false,
           onToggleDarkMode: () {
             toggled = true;
           },
         ),
       ));
+      await tester.pumpAndSettle();
 
       // Dark mode icon is shown
       expect(find.byIcon(Icons.dark_mode), findsOneWidget);
@@ -166,6 +192,7 @@ void main() {
     testWidgets('shuffle random name buttons are present on both fields',
         (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Both fields should have shuffle buttons
       expect(find.byIcon(Icons.shuffle), findsNWidgets(2));
@@ -174,6 +201,7 @@ void main() {
     testWidgets('tapping shuffle fills first field with a name',
         (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Tap shuffle on first field
       await tester.tap(find.byIcon(Icons.shuffle).first);
@@ -189,6 +217,7 @@ void main() {
     testWidgets('tapping shuffle fills second field with a name',
         (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       // Tap shuffle on second field
       await tester.tap(find.byIcon(Icons.shuffle).last);
@@ -203,8 +232,17 @@ void main() {
 
     testWidgets('history button is present on home screen', (tester) async {
       await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.history_rounded), findsOneWidget);
+    });
+
+    testWidgets('locale toggle button is present', (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
+
+      // Locale button shows "EN" for English
+      expect(find.text('EN'), findsOneWidget);
     });
   });
 
@@ -217,6 +255,7 @@ void main() {
             letter: 'L',
             name1: 'Alice',
             name2: 'Bob',
+            getMeaning: FlamesGame.getMeaning,
           ),
         ),
       ));
@@ -241,6 +280,7 @@ void main() {
               letter: letter,
               name1: 'Test1',
               name2: 'Test2',
+              getMeaning: FlamesGame.getMeaning,
             ),
           ),
         ));
@@ -259,6 +299,7 @@ void main() {
             letter: 'X',
             name1: 'A',
             name2: 'B',
+            getMeaning: FlamesGame.getMeaning,
           ),
         ),
       ));

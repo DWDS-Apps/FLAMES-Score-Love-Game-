@@ -82,6 +82,9 @@ class StorageKeys {
 
   /// Key for persisting the result history list.
   static const String resultHistory = 'resultHistory';
+
+  /// Key for persisting the locale preference.
+  static const String locale = 'locale';
 }
 
 /// Color-related constants for the app theme.

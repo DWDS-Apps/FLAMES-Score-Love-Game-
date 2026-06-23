@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/app_constants.dart' show AppColors, AppConstants, StorageKeys;
+import 'l10n/app_localizations.dart';
 import 'screens/home_screen.dart';
 
 /// Entry point for the FLAMES Love Game application.
@@ -11,8 +13,9 @@ void main() {
 
 /// Root widget for the FLAMES Love Game.
 ///
-/// Configures Material 3 theming with a pink/love color scheme
-/// and supports both light and dark theme modes with persistent preference.
+/// Configures Material 3 theming with a pink/love color scheme,
+/// supports both light and dark theme modes, and provides
+/// English and Filipino localization with persistent preference.
 class FlamesApp extends StatefulWidget {
   /// Creates the root application widget.
   const FlamesApp({super.key});
@@ -24,18 +27,23 @@ class FlamesApp extends StatefulWidget {
 class _FlamesAppState extends State<FlamesApp> {
   bool _useDarkMode = false;
   bool _initialized = false;
+  Locale _locale = const Locale('en', 'US');
 
   @override
   void initState() {
     super.initState();
-    _loadThemePreference();
+    _loadPreferences();
   }
 
-  /// Loads the saved dark mode preference from local storage.
-  Future<void> _loadThemePreference() async {
+  /// Loads the saved dark mode and locale preferences from local storage.
+  Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _useDarkMode = prefs.getBool(StorageKeys.darkMode) ?? false;
+      final localeCode = prefs.getString(StorageKeys.locale) ?? 'en';
+      _locale = localeCode == 'fil'
+          ? const Locale('fil', 'PH')
+          : const Locale('en', 'US');
       _initialized = true;
     });
   }
@@ -50,9 +58,22 @@ class _FlamesAppState extends State<FlamesApp> {
     });
   }
 
+  /// Toggles between English and Filipino locale and persists the preference.
+  Future<void> _toggleLocale() async {
+    final newLocale =
+        _locale.languageCode == 'en'
+            ? const Locale('fil', 'PH')
+            : const Locale('en', 'US');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(StorageKeys.locale, newLocale.languageCode);
+    setState(() {
+      _locale = newLocale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Show a splash-like empty container until preference is loaded
+    // Show a splash-like empty container until preferences are loaded
     if (!_initialized) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -84,6 +105,13 @@ class _FlamesAppState extends State<FlamesApp> {
     return MaterialApp(
       title: AppConstants.appTitle,
       debugShowCheckedModeBanner: false,
+      locale: _locale,
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(AppColors.seedPink),
@@ -110,6 +138,8 @@ class _FlamesAppState extends State<FlamesApp> {
       home: HomeScreen(
         isDarkMode: _useDarkMode,
         onToggleDarkMode: _toggleDarkMode,
+        locale: _locale,
+        onToggleLocale: _toggleLocale,
       ),
     );
   }

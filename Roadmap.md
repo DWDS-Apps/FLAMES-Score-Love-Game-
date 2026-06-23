@@ -19,7 +19,7 @@
 - [x] Random name generator (for fun)
 - [x] Result history list (saved locally)
 - [x] Share result as image/text
-- [ ] Sound effects (tap, reveal)
+- [x] Sound effects (tap, reveal)
 - [ ] Multi-language support (English + Filipino)
 
 ## Phase 4: Quality

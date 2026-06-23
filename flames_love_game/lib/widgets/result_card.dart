@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/flames_game.dart';
 
 /// A card that displays the FLAMES calculation result.
 ///
 /// Shows the result letter in a large circle, the meaning (emoji + label),
 /// a description, and the two names that were compared.
+/// Uses a [getMeaning] callback to support localized FLAMES meanings.
 class ResultCard extends StatelessWidget {
   /// The FLAMES result letter (F, L, A, M, E, or S).
   final String letter;
@@ -15,18 +15,25 @@ class ResultCard extends StatelessWidget {
   /// The second name entered by the user.
   final String name2;
 
-  /// Creates a result card with the given [letter], [name1], and [name2].
+  /// Callback to look up the meaning map for a FLAMES letter.
+  ///
+  /// Returns `{label, emoji, description, color}` or null.
+  final Map<String, String>? Function(String) getMeaning;
+
+  /// Creates a result card with the given [letter], [name1], [name2],
+  /// and [getMeaning] callback for localized meanings.
   const ResultCard({
     super.key,
     required this.letter,
     required this.name1,
     required this.name2,
+    required this.getMeaning,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final meaning = FlamesGame.getMeaning(letter);
+    final meaning = getMeaning(letter);
     if (meaning == null) return const SizedBox.shrink();
 
     final color = Color(int.parse(meaning['color']!));
