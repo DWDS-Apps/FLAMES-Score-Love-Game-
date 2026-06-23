@@ -16,14 +16,14 @@
 - [x] App icon
 
 ## Phase 3: Features
+- [x] Random name generator (for fun)
 - [ ] Result history list (saved locally)
 - [ ] Share result as image/text
 - [ ] Sound effects (tap, reveal)
 - [ ] Multi-language support (English + Filipino)
-- [ ] Random name generator (for fun)
 
 ## Phase 4: Quality
-- [x] Widget tests
+- [x] Widget tests (30 passing)
 - [ ] Integration tests
 - [ ] Accessibility audit (labels, contrast, touch targets)
 - [ ] Performance profiling (frame rates, startup)

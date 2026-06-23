@@ -10,12 +10,15 @@
 - [x] Improve empty-state UI (legend looks nicer, maybe a prompt)
 - [x] Add input clearing "X" button in text fields
 - [x] Add subtle particle/heart animation on result reveal
+- [x] Dark theme toggle with persistent preference
 
 ### Testing
 - [x] Add widget tests for HomeScreen (form validation, result display)
 - [x] Add widget test for ResultCard rendering
 - [x] Add test for non-ASCII characters (e.g., ñ, ü)
 - [x] Add test for duplicate letters in names
+- [x] Add tests for dark mode toggle
+- [x] Add tests for random name generator
 
 ### Code Quality
 - [x] Run `dart analyze` — 0 issues ✓
@@ -34,7 +37,5 @@
 - [ ] Result history with local storage (shared_preferences)
 - [ ] Share sheet integration (share_plus)
 - [ ] Sound effects (flutter_beep or audioplayers)
-- [ ] Dark theme toggle
 - [ ] i18n: English + Filipino locale
-- [ ] Random name generator
 - [ ] Splash screen (flutter_native_splash)
