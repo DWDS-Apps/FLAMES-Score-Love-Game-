@@ -51,6 +51,20 @@ class AppConstants {
   static const String tryAgainButtonKey = 'try-again-button';
   static const String name1FieldKey = 'name1-field';
   static const String name2FieldKey = 'name2-field';
+  static const String name1RandomKey = 'name1-random';
+  static const String name2RandomKey = 'name2-random';
+
+  // -- Random name generator --
+  static const List<String> sampleNames = [
+    'Alice', 'Bob', 'Charlie', 'Diana', 'Ethan',
+    'Fiona', 'George', 'Hannah', 'Ivan', 'Julia',
+    'Kevin', 'Linda', 'Maria', 'Noah', 'Olivia',
+    'Pedro', 'Queenie', 'Ramon', 'Sofia', 'Thomas',
+    'Uma', 'Victor', 'Wendy', 'Xander', 'Yuki',
+    'Zoe', 'Jose', 'Elena', 'Miguel', 'Isabella',
+    'Lorenzo', 'Rosa', 'Antonio', 'Carmen', 'Diego',
+    'Ana', 'Luis', 'Teresa', 'Carlos', 'Angela',
+  ];
 }
 
 /// Color-related constants for the app theme.

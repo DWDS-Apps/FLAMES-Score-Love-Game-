@@ -25,6 +25,7 @@ class ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final meaning = FlamesGame.getMeaning(letter);
     if (meaning == null) return const SizedBox.shrink();
 
@@ -99,7 +100,7 @@ class ResultCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey.shade700,
+                color: colorScheme.onSurfaceVariant,
                 height: 1.4,
               ),
             ),
@@ -109,7 +110,7 @@ class ResultCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -120,7 +121,7 @@ class ResultCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
-                      color: Colors.grey.shade800,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Padding(
@@ -128,7 +129,7 @@ class ResultCard extends StatelessWidget {
                     child: Icon(
                       Icons.favorite,
                       size: 18,
-                      color: Colors.pink.shade300,
+                      color: colorScheme.primary.withValues(alpha: 0.7),
                     ),
                   ),
                   Text(
@@ -136,7 +137,7 @@ class ResultCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
-                      color: Colors.grey.shade800,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],

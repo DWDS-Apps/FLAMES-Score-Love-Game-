@@ -4,10 +4,18 @@ import 'package:flames_love_game/models/flames_game.dart';
 import 'package:flames_love_game/screens/home_screen.dart';
 import 'package:flames_love_game/widgets/result_card.dart';
 
+Widget createHomeScreen() {
+  return MaterialApp(
+    home: HomeScreen(
+      onToggleDarkMode: () {},
+    ),
+  );
+}
+
 void main() {
   group('HomeScreen Widget Tests', () {
     testWidgets('renders the FLAMES header and legend', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // Header should be present
       expect(find.text('FLAMES'), findsOneWidget);
@@ -29,7 +37,7 @@ void main() {
 
     testWidgets('shows two text fields and calculate button initially',
         (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // Input fields
       expect(find.byType(TextFormField), findsNWidgets(2));
@@ -41,7 +49,7 @@ void main() {
     });
 
     testWidgets('validates empty fields', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // Tap calculate without entering anything
       await tester.tap(find.text('Calculate FLAMES'));
@@ -52,7 +60,7 @@ void main() {
     });
 
     testWidgets('shows result after entering names', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // Enter names
       await tester.enterText(
@@ -78,7 +86,7 @@ void main() {
     });
 
     testWidgets('try again resets to form', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // Enter names and calculate
       await tester.enterText(
@@ -113,7 +121,7 @@ void main() {
     });
 
     testWidgets('clear buttons appear when text is entered', (tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidget(createHomeScreen());
 
       // No clear buttons initially
       expect(find.byIcon(Icons.close), findsNothing);
@@ -127,6 +135,70 @@ void main() {
 
       // Clear button should appear for first field
       expect(find.byIcon(Icons.close), findsOneWidget);
+    });
+
+    testWidgets('dark mode toggle button is present', (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+
+      // Dark mode toggle should be present
+      expect(find.byIcon(Icons.dark_mode), findsOneWidget);
+    });
+
+    testWidgets('tapping dark mode toggles icon', (tester) async {
+      bool toggled = false;
+      await tester.pumpWidget(MaterialApp(
+        home: HomeScreen(
+          isDarkMode: false,
+          onToggleDarkMode: () {
+            toggled = true;
+          },
+        ),
+      ));
+
+      // Dark mode icon is shown
+      expect(find.byIcon(Icons.dark_mode), findsOneWidget);
+
+      // Tap the toggle
+      await tester.tap(find.byIcon(Icons.dark_mode));
+      expect(toggled, isTrue);
+    });
+
+    testWidgets('shuffle random name buttons are present on both fields',
+        (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+
+      // Both fields should have shuffle buttons
+      expect(find.byIcon(Icons.shuffle), findsNWidgets(2));
+    });
+
+    testWidgets('tapping shuffle fills first field with a name',
+        (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+
+      // Tap shuffle on first field
+      await tester.tap(find.byIcon(Icons.shuffle).first);
+      await tester.pump();
+
+      // First field should now have text
+      final field1 = tester.widget<TextFormField>(
+        find.byType(TextFormField).first,
+      );
+      expect(field1.controller!.text, isNotEmpty);
+    });
+
+    testWidgets('tapping shuffle fills second field with a name',
+        (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+
+      // Tap shuffle on second field
+      await tester.tap(find.byIcon(Icons.shuffle).last);
+      await tester.pump();
+
+      // Second field should now have text
+      final field2 = tester.widget<TextFormField>(
+        find.byType(TextFormField).last,
+      );
+      expect(field2.controller!.text, isNotEmpty);
     });
   });
 

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_constants.dart';
@@ -10,8 +11,18 @@ import '../widgets/result_card.dart';
 /// Displays the FLAMES legend, input form for two names, and the result card
 /// with an animated reveal and celebratory heart particles.
 class HomeScreen extends StatefulWidget {
+  /// Whether dark mode is currently active.
+  final bool isDarkMode;
+
+  /// Callback invoked when the user toggles dark mode.
+  final VoidCallback onToggleDarkMode;
+
   /// Creates the home screen.
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    this.isDarkMode = false,
+    required this.onToggleDarkMode,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -97,8 +108,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _name2Controller.clear();
   }
 
+  /// Picks a random name from the sample list.
+  String _randomName() {
+    final random = Random();
+    return AppConstants.sampleNames[random.nextInt(AppConstants.sampleNames.length)];
+  }
+
+  /// Fills the first name field with a random name.
+  void _fillRandomName1() {
+    _name1Controller.text = _randomName();
+    setState(() {});
+  }
+
+  /// Fills the second name field with a random name.
+  void _fillRandomName2() {
+    _name2Controller.text = _randomName();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -107,41 +138,69 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               const SizedBox(height: 32),
 
-              // Header
-              Icon(
-                Icons.favorite_rounded,
-                size: 48,
-                color: Colors.pink.shade300,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppConstants.headerTitle,
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.pink.shade700,
-                  letterSpacing: 8,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                AppConstants.headerSubtitle,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade600,
-                  letterSpacing: 2,
-                ),
+              // Header row with theme toggle
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.favorite_rounded,
+                        size: 48,
+                        color: colorScheme.primary.withValues(alpha: 0.7),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        AppConstants.headerTitle,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w900,
+                          color: colorScheme.primary,
+                          letterSpacing: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        AppConstants.headerSubtitle,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurfaceVariant,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Dark mode toggle icon
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 48),
+                    child: IconButton(
+                      icon: Icon(
+                        widget.isDarkMode
+                            ? Icons.light_mode
+                            : Icons.dark_mode,
+                      ),
+                      tooltip: widget.isDarkMode
+                          ? 'Switch to light mode'
+                          : 'Switch to dark mode',
+                      onPressed: widget.onToggleDarkMode,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
 
               // Legend: FLAMES letters
-              _buildFlamesLegend(),
+              _buildFlamesLegend(colorScheme),
               const SizedBox(height: 28),
 
               // Form or Result
-              if (_resultLetter == null) _buildForm(),
-              if (_resultLetter != null) _buildResult(),
+              if (_resultLetter == null) _buildForm(colorScheme),
+              if (_resultLetter != null) _buildResult(colorScheme),
             ],
           ),
         ),
@@ -150,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   /// Builds the FLAMES legend row with letter, emoji, and label.
-  Widget _buildFlamesLegend() {
+  Widget _buildFlamesLegend(ColorScheme colorScheme) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -159,9 +218,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: colorScheme.outlineVariant),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -173,13 +232,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 14,
-                  color: Colors.pink.shade600,
+                  color: colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 4),
               Text(
                 item.$2,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -189,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   /// Builds the input form with name fields, heart icon, and calculate button.
-  Widget _buildForm() {
+  Widget _buildForm(ColorScheme colorScheme) {
     return Form(
       key: _formKey,
       child: Column(
@@ -204,20 +266,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               labelText: AppConstants.labelName1,
               hintText: AppConstants.hintName1,
               prefixIcon: const Icon(Icons.person),
-              suffixIcon: _name1Controller.text.isNotEmpty
-                  ? IconButton(
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    key: const ValueKey(AppConstants.name1RandomKey),
+                    icon: const Icon(Icons.shuffle, size: 18),
+                    tooltip: 'Random name',
+                    onPressed: _fillRandomName1,
+                  ),
+                  if (_name1Controller.text.isNotEmpty)
+                    IconButton(
                       icon: const Icon(Icons.close, size: 18),
                       onPressed: () {
                         _clearName1();
                         setState(() {});
                       },
-                    )
-                  : null,
+                    ),
+                ],
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: colorScheme.surfaceContainerLow,
               counterText: '', // Hide character counter
             ),
             validator: (value) {
@@ -236,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Icon(
               Icons.favorite,
               size: 28,
-              color: Colors.pink.shade200,
+              color: colorScheme.primary.withValues(alpha: 0.5),
               key: const ValueKey(AppConstants.heartIconKey),
             ),
           ),
@@ -252,20 +324,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               labelText: AppConstants.labelName2,
               hintText: AppConstants.hintName2,
               prefixIcon: const Icon(Icons.favorite_border),
-              suffixIcon: _name2Controller.text.isNotEmpty
-                  ? IconButton(
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    key: const ValueKey(AppConstants.name2RandomKey),
+                    icon: const Icon(Icons.shuffle, size: 18),
+                    tooltip: 'Random name',
+                    onPressed: _fillRandomName2,
+                  ),
+                  if (_name2Controller.text.isNotEmpty)
+                    IconButton(
                       icon: const Icon(Icons.close, size: 18),
                       onPressed: () {
                         _clearName2();
                         setState(() {});
                       },
-                    )
-                  : null,
+                    ),
+                ],
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: colorScheme.surfaceContainerLow,
               counterText: '',
             ),
             validator: (value) {
@@ -288,8 +370,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               key: const ValueKey(AppConstants.calculateButtonKey),
               onPressed: _calculate,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink.shade500,
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -315,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   /// Builds the animated result section with heart particles.
-  Widget _buildResult() {
+  Widget _buildResult(ColorScheme colorScheme) {
     return Column(
       children: [
         // Heart particles overlay
@@ -340,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // Floating heart particles
               IgnorePointer(
                 child: HeartParticles(
-                  heartColor: Colors.pink.shade200,
+                  heartColor: colorScheme.primary.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -361,8 +443,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.pink.shade500,
-              side: BorderSide(color: Colors.pink.shade300),
+              foregroundColor: colorScheme.primary,
+              side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.6)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
