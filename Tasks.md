@@ -33,6 +33,6 @@
 
 ## Backlog
 - [x] Result history with local storage (shared_preferences)
-- [ ] Share sheet integration (share_plus)
+- [x] Share sheet integration (share_plus)
 - [ ] Sound effects (flutter_beep or audioplayers)
 - [ ] i18n: English + Filipino locale
