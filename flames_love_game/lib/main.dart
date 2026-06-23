@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'constants/app_constants.dart';
+import 'constants/app_constants.dart' show AppColors, AppConstants, StorageKeys;
 import 'screens/home_screen.dart';
 
 /// Entry point for the FLAMES Love Game application.
@@ -35,7 +35,7 @@ class _FlamesAppState extends State<FlamesApp> {
   Future<void> _loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _useDarkMode = prefs.getBool('darkMode') ?? false;
+      _useDarkMode = prefs.getBool(StorageKeys.darkMode) ?? false;
       _initialized = true;
     });
   }
@@ -44,7 +44,7 @@ class _FlamesAppState extends State<FlamesApp> {
   Future<void> _toggleDarkMode() async {
     final newValue = !_useDarkMode;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('darkMode', newValue);
+    await prefs.setBool(StorageKeys.darkMode, newValue);
     setState(() {
       _useDarkMode = newValue;
     });

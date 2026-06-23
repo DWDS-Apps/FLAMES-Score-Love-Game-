@@ -53,6 +53,10 @@ class AppConstants {
   static const String name2FieldKey = 'name2-field';
   static const String name1RandomKey = 'name1-random';
   static const String name2RandomKey = 'name2-random';
+  static const String historyButtonKey = 'history-button';
+  static const String historySheetKey = 'history-sheet';
+  static const String clearHistoryButtonKey = 'clear-history-button';
+  static const String emptyHistoryKey = 'empty-history';
 
   // -- Random name generator --
   static const List<String> sampleNames = [
@@ -65,6 +69,17 @@ class AppConstants {
     'Lorenzo', 'Rosa', 'Antonio', 'Carmen', 'Diego',
     'Ana', 'Luis', 'Teresa', 'Carlos', 'Angela',
   ];
+}
+
+/// SharedPreferences storage keys.
+class StorageKeys {
+  StorageKeys._();
+
+  /// Key for persisting the dark mode toggle preference.
+  static const String darkMode = 'darkMode';
+
+  /// Key for persisting the result history list.
+  static const String resultHistory = 'resultHistory';
 }
 
 /// Color-related constants for the app theme.

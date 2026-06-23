@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_constants.dart';
 import '../models/flames_game.dart';
+import '../models/result_entry.dart';
+import '../services/result_history_service.dart';
 import '../widgets/heart_particles.dart';
 import '../widgets/result_card.dart';
 
@@ -36,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String? _resultLetter;
   String? _name1;
   String? _name2;
+  final _historyService = ResultHistoryService();
 
   late final AnimationController _resultController;
   late final Animation<double> _resultScale;
@@ -82,6 +85,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _name2 = name2;
     });
 
+    // Save to history (fire-and-forget)
+    if (_resultLetter != null && _resultLetter!.isNotEmpty) {
+      _historyService.saveEntry(
+        ResultEntry(
+          name1: name1,
+          name2: name2,
+          resultLetter: _resultLetter!,
+          timestamp: DateTime.now(),
+        ),
+      );
+    }
+
     // Animate result entrance
     _resultController.forward(from: 0);
   }
@@ -124,6 +139,205 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _fillRandomName2() {
     _name2Controller.text = _randomName();
     setState(() {});
+  }
+
+  /// Shows a modal bottom sheet with the result history.
+  Future<void> _showHistory() async {
+    final history = await _historyService.getHistory();
+
+    if (!mounted) return;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return _buildHistorySheet(sheetContext, history);
+      },
+    );
+  }
+
+  /// Builds the history bottom sheet content.
+  Widget _buildHistorySheet(BuildContext context, List<ResultEntry> history) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return DraggableScrollableSheet(
+      key: const ValueKey(AppConstants.historySheetKey),
+      expand: false,
+      initialChildSize: 0.55,
+      minChildSize: 0.3,
+      maxChildSize: 0.85,
+      builder: (context, scrollController) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Title row
+              Row(
+                children: [
+                  Icon(Icons.history_rounded,
+                      color: colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Result History',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (history.isNotEmpty)
+                    TextButton.icon(
+                      key: const ValueKey(AppConstants.clearHistoryButtonKey),
+                      onPressed: () async {
+                        await _historyService.clearHistory();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.delete_sweep, size: 18),
+                      label: const Text('Clear all'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: colorScheme.error,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 4),
+
+              // History list
+              if (history.isEmpty)
+                Expanded(
+                  child: Center(
+                    key: const ValueKey(AppConstants.emptyHistoryKey),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.favorite_border,
+                          size: 48,
+                          color: colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.4),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No results yet!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Calculate your first FLAMES result.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.separated(
+                    controller: scrollController,
+                    itemCount: history.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final entry = history[index];
+                      final meaning =
+                          FlamesGame.getMeaning(entry.resultLetter);
+                      final emoji = meaning?['emoji'] ?? '';
+                      final label = meaning?['label'] ?? entry.resultLetter;
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: colorScheme.primaryContainer,
+                          child: Text(
+                            entry.resultLetter,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          '${entry.name1} ♥ ${entry.name2}',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          '$emoji $label  •  ${_formatTimestamp(entry.timestamp)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            size: 18,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.6),
+                          ),
+                          onPressed: () async {
+                            await _historyService.removeEntry(index);
+                            if (!context.mounted) return;
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        onTap: () {
+                          // Load the history entry's names
+                          Navigator.of(context).pop();
+                          _name1Controller.text = entry.name1;
+                          _name2Controller.text = entry.name2;
+                          _calculate();
+                        },
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Formats a timestamp to a short, readable string.
+  String _formatTimestamp(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+    if (diff.inDays < 1) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+
+    // Otherwise show date
+    return '${dt.month}/${dt.day}/${dt.year}';
   }
 
   @override
@@ -174,20 +388,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                   const Spacer(),
-                  // Dark mode toggle icon
+                  // Dark mode toggle and history buttons
                   Padding(
                     padding: const EdgeInsets.only(bottom: 48),
-                    child: IconButton(
-                      icon: Icon(
-                        widget.isDarkMode
-                            ? Icons.light_mode
-                            : Icons.dark_mode,
-                      ),
-                      tooltip: widget.isDarkMode
-                          ? 'Switch to light mode'
-                          : 'Switch to dark mode',
-                      onPressed: widget.onToggleDarkMode,
-                      color: colorScheme.onSurfaceVariant,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          key: const ValueKey(AppConstants.historyButtonKey),
+                          icon: const Icon(Icons.history_rounded),
+                          tooltip: 'Result history',
+                          onPressed: _showHistory,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          icon: Icon(
+                            widget.isDarkMode
+                                ? Icons.light_mode
+                                : Icons.dark_mode,
+                          ),
+                          tooltip: widget.isDarkMode
+                              ? 'Switch to light mode'
+                              : 'Switch to dark mode',
+                          onPressed: widget.onToggleDarkMode,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ],
                     ),
                   ),
                 ],

@@ -200,6 +200,12 @@ void main() {
       );
       expect(field2.controller!.text, isNotEmpty);
     });
+
+    testWidgets('history button is present on home screen', (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+
+      expect(find.byIcon(Icons.history_rounded), findsOneWidget);
+    });
   });
 
   group('ResultCard Widget Tests', () {
