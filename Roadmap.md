@@ -17,7 +17,7 @@
 
 ## Phase 3: Features
 - [x] Random name generator (for fun)
-- [ ] Result history list (saved locally)
+- [x] Result history list (saved locally)
 - [ ] Share result as image/text
 - [ ] Sound effects (tap, reveal)
 - [ ] Multi-language support (English + Filipino)

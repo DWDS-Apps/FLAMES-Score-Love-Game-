@@ -32,10 +32,7 @@
 - [x] Add `flutter build apk --release` to CI
 
 ## Backlog
-- [ ] Set up Firebase Hosting for web build
-- [ ] Create app icon (at least adaptive Android icon)
-- [ ] Result history with local storage (shared_preferences)
+- [x] Result history with local storage (shared_preferences)
 - [ ] Share sheet integration (share_plus)
 - [ ] Sound effects (flutter_beep or audioplayers)
 - [ ] i18n: English + Filipino locale
-- [ ] Splash screen (flutter_native_splash)
