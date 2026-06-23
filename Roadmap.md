@@ -7,13 +7,13 @@
 - [x] Unit tests (10 passing)
 - [x] Documentation (docs/ folder)
 
-## Phase 2: Polish
-- [ ] Animated transitions (name entry → result)
-- [ ] Haptic feedback on calculation
-- [ ] Input validation UX (inline hints, shake on error)
-- [ ] Dark mode support
-- [ ] Splash / intro screen
-- [ ] App icon
+## Phase 2: Polish ✅
+- [x] Animated transitions (name entry → result)
+- [x] Haptic feedback on calculation
+- [x] Input validation UX (inline hints, shake on error)
+- [x] Dark mode support
+- [x] Splash / intro screen
+- [x] App icon
 
 ## Phase 3: Features
 - [ ] Result history list (saved locally)
@@ -23,14 +23,14 @@
 - [ ] Random name generator (for fun)
 
 ## Phase 4: Quality
-- [ ] Widget tests
+- [x] Widget tests
 - [ ] Integration tests
 - [ ] Accessibility audit (labels, contrast, touch targets)
 - [ ] Performance profiling (frame rates, startup)
 - [ ] App store listing assets (screenshots, description)
 
 ## Phase 5: Release
-- [ ] Android release build (AAB)
-- [ ] Web deployment (Firebase Hosting)
-- [ ] GitHub Actions CI
-- [ ] Automate pub get + analyze + test in CI
+- [x] Android release build (AAB)
+- [x] Web deployment (Firebase Hosting)
+- [x] GitHub Actions CI
+- [x] Automate pub get + analyze + test in CI
