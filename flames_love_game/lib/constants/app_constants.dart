@@ -14,29 +14,11 @@ class AppConstants {
   /// Semantic label for the header area (for screen readers).
   static const String headerSemanticsTitle = 'FLAMES Love Score Game header';
 
-  /// The subtitle below the header.
-  static const String headerSubtitle = 'Love Score Game';
-
-  // -- Input field labels & hints --
-  static const String labelName1 = 'Your Name';
-  static const String hintName1 = 'Enter first name';
-  static const String labelName2 = "Crush's Name";
-  static const String hintName2 = 'Enter second name';
-
-  // -- Validation --
-  static const String validationEmpty = 'Please enter a name';
-
-  // -- Buttons --
-  static const String buttonCalculate = 'Calculate FLAMES';
-  static const String buttonTryAgain = 'Try Again';
-  static const String buttonShare = 'Share';
-
   // -- Limits --
   static const int maxNameLength = 50;
 
   // -- Animation durations (milliseconds) --
   static const int resultFadeInMs = 500;
-  static const int particleDurationMs = 2000;
 
   // -- Legend items (letter, label, emoji) --
   static const List<(String, String, String)> legendItems = [
