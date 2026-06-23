@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../constants/app_constants.dart';
 import '../models/flames_game.dart';
 import '../models/result_entry.dart';
@@ -111,6 +112,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
     _name1Controller.clear();
     _name2Controller.clear();
+  }
+
+  /// Shares the current result via the system share sheet.
+  void _shareResult() {
+    if (_resultLetter == null || _name1 == null || _name2 == null) return;
+
+    final meaning = FlamesGame.getMeaning(_resultLetter!);
+    if (meaning == null) return;
+
+    final text = '''
+💕 FLAMES Love Game Result 💕
+
+$_name1 ♥ $_name2
+
+Result: $_resultLetter — ${meaning['label']} ${meaning['emoji']}
+
+${meaning['description']}
+
+━━━━━━━━━━━━━━━━━━━━━━━
+Made with FLAMES Love Game ❤️''';
+
+    Share.share(text.trim());
+  }
+
+  /// Shares a history [entry] via the system share sheet.
+  void _shareEntry(ResultEntry entry) {
+    final meaning = FlamesGame.getMeaning(entry.resultLetter);
+    if (meaning == null) return;
+
+    final text = '''
+💕 FLAMES Love Game Result 💕
+
+${entry.name1} ♥ ${entry.name2}
+
+Result: ${entry.resultLetter} — ${meaning['label']} ${meaning['emoji']}
+
+${meaning['description']}
+
+━━━━━━━━━━━━━━━━━━━━━━━
+Made with FLAMES Love Game ❤️''';
+
+    Share.share(text.trim());
   }
 
   /// Clears the first name field.
@@ -295,18 +338,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.close,
-                            size: 18,
-                            color: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.6),
-                          ),
-                          onPressed: () async {
-                            await _historyService.removeEntry(index);
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          },
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.share_rounded,
+                                size: 18,
+                                color: colorScheme.primary
+                                    .withValues(alpha: 0.7),
+                              ),
+                              tooltip: 'Share result',
+                              onPressed: () {
+                                _shareEntry(entry);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.close,
+                                size: 18,
+                                color: colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.6),
+                              ),
+                              onPressed: () async {
+                                await _historyService.removeEntry(index);
+                                if (!context.mounted) return;
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
                         ),
                         onTap: () {
                           // Load the history entry's names
@@ -657,26 +717,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 16),
 
-        // Try again button
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: OutlinedButton.icon(
-            key: const ValueKey(AppConstants.tryAgainButtonKey),
-            onPressed: _reset,
-            icon: const Icon(Icons.replay),
-            label: const Text(
-              AppConstants.buttonTryAgain,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: colorScheme.primary,
-              side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.6)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+        // Action buttons: Try Again + Share
+        Row(
+          children: [
+            // Try Again button
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: OutlinedButton.icon(
+                  key: const ValueKey(AppConstants.tryAgainButtonKey),
+                  onPressed: _reset,
+                  icon: const Icon(Icons.replay),
+                  label: const Text(
+                    AppConstants.buttonTryAgain,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colorScheme.primary,
+                    side: BorderSide(
+                      color: colorScheme.primary.withValues(alpha: 0.6),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(width: 12),
+            // Share button
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: FilledButton.icon(
+                  key: const ValueKey(AppConstants.shareButtonKey),
+                  onPressed: _shareResult,
+                  icon: const Icon(Icons.share_rounded),
+                  label: const Text(
+                    AppConstants.buttonShare,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 40),
       ],

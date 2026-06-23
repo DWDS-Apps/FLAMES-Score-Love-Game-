@@ -26,6 +26,7 @@ class AppConstants {
   // -- Buttons --
   static const String buttonCalculate = 'Calculate FLAMES';
   static const String buttonTryAgain = 'Try Again';
+  static const String buttonShare = 'Share';
 
   // -- Limits --
   static const int maxNameLength = 50;
@@ -49,6 +50,7 @@ class AppConstants {
   static const String resultCardKey = 'result-card';
   static const String calculateButtonKey = 'calculate-button';
   static const String tryAgainButtonKey = 'try-again-button';
+  static const String shareButtonKey = 'share-button';
   static const String name1FieldKey = 'name1-field';
   static const String name2FieldKey = 'name2-field';
   static const String name1RandomKey = 'name1-random';
