@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String? _name2;
   final _historyService = ResultHistoryService();
   final _audioService = AudioService.instance;
+  final _random = Random();
 
   late final AnimationController _resultController;
   late final Animation<double> _resultScale;
@@ -188,9 +189,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   /// Picks a random name from the sample list.
   String _randomName() {
-    final random = Random();
     return AppConstants
-        .sampleNames[random.nextInt(AppConstants.sampleNames.length)];
+        .sampleNames[_random.nextInt(AppConstants.sampleNames.length)];
   }
 
   /// Fills the first name field with a random name.

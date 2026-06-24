@@ -69,7 +69,7 @@ class _HeartParticlesState extends State<HeartParticles>
 
 /// Data for a single heart particle.
 class _Particle {
-  _Particle(this.random)
+  _Particle(Random random)
       : x = random.nextDouble(),
         y = random.nextDouble(),
         size = 12.0 + random.nextDouble() * 20.0,
@@ -87,7 +87,6 @@ class _Particle {
   final double swayFreq;
   final double swayAmount;
   final double delay;
-  final Random random;
 }
 
 /// Paints floating heart particles using a custom painter.
