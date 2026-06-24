@@ -29,8 +29,14 @@
 - [x] Performance profiling (frame rates, startup)
 - [x] App store listing assets (screenshots, description)
 
-## Phase 5: Release
+## Phase 5: Release ✅
 - [x] Android release build (AAB)
 - [x] Web deployment (Firebase Hosting)
 - [x] GitHub Actions CI
 - [x] Automate pub get + analyze + test in CI
+
+## Phase 6: Iterative Refinement ✅
+- [x] Extract `_buildNameField` helper (eliminated duplicate form field code)
+- [x] Error handling for Share.share() (crash prevention)
+- [x] Clear history confirmation dialog
+- [x] Locale-resilient integration tests

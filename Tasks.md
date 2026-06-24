@@ -37,6 +37,12 @@
 - [x] Add `.github/workflows/ci.yml` (analyze + test)
 - [x] Add `flutter build apk --release` to CI
 
+## Quality Sprint 2
+- [x] Share error handling (try-catch on Share.share calls)
+- [x] Clear history confirmation dialog (with EN/FIL localization)
+- [x] Extract `_buildNameField` helper to eliminate duplicate TextFormField code (~70 lines saved)
+- [x] Make integration tests locale-independent (ValueKey finders instead of locale-specific text)
+
 ## Backlog
 - [x] Result history with local storage (shared_preferences)
 - [x] Share sheet integration (share_plus)
