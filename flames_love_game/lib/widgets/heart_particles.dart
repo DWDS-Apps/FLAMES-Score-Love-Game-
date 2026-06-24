@@ -60,7 +60,6 @@ class _HeartParticlesState extends State<HeartParticles>
             particles: _particles,
             progress: _controller.value,
             heartColor: widget.heartColor,
-            random: _random,
           ),
         );
       },
@@ -97,13 +96,11 @@ class _HeartPainter extends CustomPainter {
     required this.particles,
     required this.progress,
     required this.heartColor,
-    required this.random,
   });
 
   final List<_Particle> particles;
   final double progress;
   final Color heartColor;
-  final Random random;
 
   @override
   void paint(Canvas canvas, Size size) {
