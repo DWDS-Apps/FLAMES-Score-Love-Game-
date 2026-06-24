@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   /// Shares the current result via the system share sheet.
-  void _shareResult() {
+  Future<void> _shareResult() async {
     _audioService.playButtonTap();
     if (_resultLetter == null || _name1 == null || _name2 == null) return;
 
@@ -154,7 +154,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       meaning['description']!,
     );
 
-    Share.share(text.trim());
+    try {
+      await Share.share(text.trim());
+    } catch (_) {
+      // Silently ignore share errors — sharing is non-critical.
+    }
   }
 
   /// Shares a history [entry] via the system share sheet.
@@ -172,7 +176,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       meaning['description']!,
     );
 
-    Share.share(text.trim());
+    try {
+      Share.share(text.trim());
+    } catch (_) {
+      // Silently ignore share errors — sharing is non-critical.
+    }
   }
 
   /// Clears the first name field.
@@ -275,6 +283,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     TextButton.icon(
                       key: const ValueKey(AppConstants.clearHistoryButtonKey),
                       onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(l10n.historyClearConfirmTitle),
+                            content: Text(l10n.historyClearConfirmBody),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: Text(l10n.historyClearCancel),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: Text(l10n.historyClearConfirmAction),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed != true) return;
                         await _historyService.clearHistory();
                         if (!context.mounted) return;
                         Navigator.of(context).pop();
@@ -597,49 +623,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Column(
         children: [
           // Name 1
-          TextFormField(
-            key: const ValueKey(AppConstants.name1FieldKey),
+          _buildNameField(
+            fieldKey: AppConstants.name1FieldKey,
             controller: _name1Controller,
-            textCapitalization: TextCapitalization.words,
-            maxLength: AppConstants.maxNameLength,
-            decoration: InputDecoration(
-              labelText: l10n.labelName1,
-              hintText: l10n.hintName1,
-              prefixIcon: const Icon(Icons.person),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    key: const ValueKey(AppConstants.name1RandomKey),
-                    icon: const Icon(Icons.shuffle, size: 18),
-                    tooltip: l10n.randomNameTooltip,
-                    onPressed: _fillRandomName1,
-                  ),
-                  if (_name1Controller.text.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: () {
-                        _clearName1();
-                        setState(() {});
-                      },
-                    ),
-                ],
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerLow,
-              counterText: '', // Hide character counter
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.validationEmpty;
-              }
-              return null;
-            },
+            labelText: l10n.labelName1,
+            hintText: l10n.hintName1,
+            prefixIcon: Icons.person,
+            randomKey: AppConstants.name1RandomKey,
+            onRandom: _fillRandomName1,
+            onClear: _clearName1,
             textInputAction: TextInputAction.next,
-            onChanged: (_) => setState(() {}),
+            colorScheme: colorScheme,
+            l10n: l10n,
           ),
           const SizedBox(height: 20),
 
@@ -658,50 +653,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
 
           // Name 2
-          TextFormField(
-            key: const ValueKey(AppConstants.name2FieldKey),
+          _buildNameField(
+            fieldKey: AppConstants.name2FieldKey,
             controller: _name2Controller,
-            textCapitalization: TextCapitalization.words,
-            maxLength: AppConstants.maxNameLength,
-            decoration: InputDecoration(
-              labelText: l10n.labelName2,
-              hintText: l10n.hintName2,
-              prefixIcon: const Icon(Icons.favorite_border),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    key: const ValueKey(AppConstants.name2RandomKey),
-                    icon: const Icon(Icons.shuffle, size: 18),
-                    tooltip: l10n.randomNameTooltip,
-                    onPressed: _fillRandomName2,
-                  ),
-                  if (_name2Controller.text.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: () {
-                        _clearName2();
-                        setState(() {});
-                      },
-                    ),
-                ],
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerLow,
-              counterText: '',
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.validationEmpty;
-              }
-              return null;
-            },
+            labelText: l10n.labelName2,
+            hintText: l10n.hintName2,
+            prefixIcon: Icons.favorite_border,
+            randomKey: AppConstants.name2RandomKey,
+            onRandom: _fillRandomName2,
+            onClear: _clearName2,
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _calculate(),
-            onChanged: (_) => setState(() {}),
+            colorScheme: colorScheme,
+            l10n: l10n,
           ),
           const SizedBox(height: 32),
 
@@ -737,6 +701,68 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 40),
         ],
       ),
+    );
+  }
+
+  /// Builds a name input field with shuffle (random) and clear buttons.
+  Widget _buildNameField({
+    required String fieldKey,
+    required TextEditingController controller,
+    required String labelText,
+    required String hintText,
+    required IconData prefixIcon,
+    required String randomKey,
+    required VoidCallback onRandom,
+    required VoidCallback onClear,
+    required TextInputAction textInputAction,
+    void Function(String)? onFieldSubmitted,
+    required ColorScheme colorScheme,
+    required AppLocalizations l10n,
+  }) {
+    return TextFormField(
+      key: ValueKey(fieldKey),
+      controller: controller,
+      textCapitalization: TextCapitalization.words,
+      maxLength: AppConstants.maxNameLength,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: hintText,
+        prefixIcon: Icon(prefixIcon),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              key: ValueKey(randomKey),
+              icon: const Icon(Icons.shuffle, size: 18),
+              tooltip: l10n.randomNameTooltip,
+              onPressed: onRandom,
+            ),
+            if (controller.text.isNotEmpty)
+              IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                onPressed: () {
+                  onClear();
+                  setState(() {});
+                },
+              ),
+          ],
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        filled: true,
+        fillColor: colorScheme.surfaceContainerLow,
+        counterText: '',
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return l10n.validationEmpty;
+        }
+        return null;
+      },
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
+      onChanged: (_) => setState(() {}),
     );
   }
 

@@ -45,6 +45,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyClearAll => 'Clear all';
 
   @override
+  String get historyClearConfirmTitle => 'Clear History?';
+
+  @override
+  String get historyClearConfirmBody =>
+      'This will permanently delete all your saved results.';
+
+  @override
+  String get historyClearCancel => 'Cancel';
+
+  @override
+  String get historyClearConfirmAction => 'Clear';
+
+  @override
   String get historyEmptyTitle => 'No results yet!';
 
   @override

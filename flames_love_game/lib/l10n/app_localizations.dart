@@ -95,6 +95,18 @@ abstract class AppLocalizations {
   /// Clear all button text.
   String get historyClearAll;
 
+  /// Confirmation dialog title for clearing history.
+  String get historyClearConfirmTitle;
+
+  /// Confirmation dialog body for clearing history.
+  String get historyClearConfirmBody;
+
+  /// Cancel button in the clear history confirmation dialog.
+  String get historyClearCancel;
+
+  /// Confirm action button in the clear history dialog.
+  String get historyClearConfirmAction;
+
   /// Empty state: no results yet.
   String get historyEmptyTitle;
 

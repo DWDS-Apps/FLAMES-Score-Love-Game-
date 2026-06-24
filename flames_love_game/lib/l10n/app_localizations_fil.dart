@@ -45,6 +45,19 @@ class AppLocalizationsFil extends AppLocalizations {
   String get historyClearAll => 'Linisin lahat';
 
   @override
+  String get historyClearConfirmTitle => 'Linisin ang Kasaysayan?';
+
+  @override
+  String get historyClearConfirmBody =>
+      'Ito ay permanente ngang magtatanggal ng lahat ng iyong mga na-save na resulta.';
+
+  @override
+  String get historyClearCancel => 'Kanselahin';
+
+  @override
+  String get historyClearConfirmAction => 'Linisin';
+
+  @override
   String get historyEmptyTitle => 'Wala pang resulta!';
 
   @override

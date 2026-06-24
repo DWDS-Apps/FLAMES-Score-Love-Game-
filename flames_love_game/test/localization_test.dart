@@ -24,6 +24,10 @@ void main() {
       expect(l10n.buttonShare, isNotEmpty);
       expect(l10n.historyTitle, isNotEmpty);
       expect(l10n.historyClearAll, isNotEmpty);
+      expect(l10n.historyClearConfirmTitle, isNotEmpty);
+      expect(l10n.historyClearConfirmBody, isNotEmpty);
+      expect(l10n.historyClearCancel, isNotEmpty);
+      expect(l10n.historyClearConfirmAction, isNotEmpty);
       expect(l10n.historyEmptyTitle, isNotEmpty);
       expect(l10n.historyEmptySubtitle, isNotEmpty);
       expect(l10n.shareTooltip, isNotEmpty);
@@ -91,6 +95,10 @@ void main() {
       expect(l10n.buttonShare, isNotEmpty);
       expect(l10n.historyTitle, isNotEmpty);
       expect(l10n.historyClearAll, isNotEmpty);
+      expect(l10n.historyClearConfirmTitle, isNotEmpty);
+      expect(l10n.historyClearConfirmBody, isNotEmpty);
+      expect(l10n.historyClearCancel, isNotEmpty);
+      expect(l10n.historyClearConfirmAction, isNotEmpty);
       expect(l10n.historyEmptyTitle, isNotEmpty);
       expect(l10n.historyEmptySubtitle, isNotEmpty);
       expect(l10n.shareTooltip, isNotEmpty);
