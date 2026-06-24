@@ -128,8 +128,8 @@ class AppLocalizationsEn extends AppLocalizations {
       };
 
   @override
-  String shareResultText(
-      String name1, String name2, String letter, String label, String emoji, String description) {
+  String shareResultText(String name1, String name2, String letter,
+      String label, String emoji, String description) {
     return '''💕 FLAMES Love Game Result 💕
 
 $name1 ♥ $name2

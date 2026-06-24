@@ -48,7 +48,8 @@ class AppLocalizationsFil extends AppLocalizations {
   String get historyEmptyTitle => 'Wala pang resulta!';
 
   @override
-  String get historyEmptySubtitle => 'Kalkulahin ang iyong unang FLAMES result.';
+  String get historyEmptySubtitle =>
+      'Kalkulahin ang iyong unang FLAMES result.';
 
   @override
   String get shareTooltip => 'Ibahagi ang resulta';
@@ -92,13 +93,15 @@ class AppLocalizationsFil extends AppLocalizations {
         'F': {
           'label': 'Magkaibigan',
           'emoji': '🤝',
-          'description': 'Magandang pagkakaibigan — magkasundo kayo bilang magkaibigan.',
+          'description':
+              'Magandang pagkakaibigan — magkasundo kayo bilang magkaibigan.',
           'color': '0xFF4CAF50',
         },
         'L': {
           'label': 'Magkasintahan',
           'emoji': '💕',
-          'description': 'Romantikong koneksyon — may kuryente sa pagitan ninyo!',
+          'description':
+              'Romantikong koneksyon — may kuryente sa pagitan ninyo!',
           'color': '0xFFE91E63',
         },
         'A': {
@@ -110,7 +113,8 @@ class AppLocalizationsFil extends AppLocalizations {
         'M': {
           'label': 'Kasal',
           'emoji': '💍',
-          'description': 'Matibay na pangmatagalang tugma — may potensyal na soulmate!',
+          'description':
+              'Matibay na pangmatagalang tugma — may potensyal na soulmate!',
           'color': '0xFF9C27B0',
         },
         'E': {
@@ -128,8 +132,8 @@ class AppLocalizationsFil extends AppLocalizations {
       };
 
   @override
-  String shareResultText(
-      String name1, String name2, String letter, String label, String emoji, String description) {
+  String shareResultText(String name1, String name2, String letter,
+      String label, String emoji, String description) {
     return '''💕 FLAMES Resulta ng Laro ng Pag-ibig 💕
 
 $name1 ♥ $name2

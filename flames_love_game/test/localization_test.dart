@@ -60,7 +60,8 @@ void main() {
     });
 
     test('shareResultText contains the key components', () {
-      final text = l10n.shareResultText('Alice', 'Bob', 'L', 'Lovers', '💕', 'Romantic connection');
+      final text = l10n.shareResultText(
+          'Alice', 'Bob', 'L', 'Lovers', '💕', 'Romantic connection');
       expect(text, contains('Alice'));
       expect(text, contains('Bob'));
       expect(text, contains('L'));
@@ -117,7 +118,8 @@ void main() {
       expect(l10n.legendLabels['L'], isNot('Lovers'));
     });
 
-    test('flamesMeanings covers all six letters with Filipino translations', () {
+    test('flamesMeanings covers all six letters with Filipino translations',
+        () {
       for (final letter in ['F', 'L', 'A', 'M', 'E', 'S']) {
         final meaning = l10n.flamesMeanings[letter];
         expect(meaning, isNotNull);
@@ -132,7 +134,8 @@ void main() {
     });
 
     test('shareResultText uses Filipino format', () {
-      final text = l10n.shareResultText('Alice', 'Bob', 'L', 'Magkasintahan', '💕', 'Romantikong koneksyon');
+      final text = l10n.shareResultText(
+          'Alice', 'Bob', 'L', 'Magkasintahan', '💕', 'Romantikong koneksyon');
       expect(text, contains('Alice'));
       expect(text, contains('Bob'));
       expect(text, contains('Resulta'));

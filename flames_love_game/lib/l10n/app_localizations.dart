@@ -14,8 +14,8 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      AppLocalizations.supportedLocales.any((l) => l.languageCode == locale.languageCode);
+  bool isSupported(Locale locale) => AppLocalizations.supportedLocales
+      .any((l) => l.languageCode == locale.languageCode);
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
@@ -147,7 +147,8 @@ abstract class AppLocalizations {
   // ── Share text ──
 
   /// Creates the share text for a FLAMES result.
-  String shareResultText(String name1, String name2, String letter, String label, String emoji, String description);
+  String shareResultText(String name1, String name2, String letter,
+      String label, String emoji, String description);
 
   // ── Locale switch ──
 

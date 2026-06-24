@@ -60,10 +60,9 @@ class _FlamesAppState extends State<FlamesApp> {
 
   /// Toggles between English and Filipino locale and persists the preference.
   Future<void> _toggleLocale() async {
-    final newLocale =
-        _locale.languageCode == 'en'
-            ? const Locale('fil', 'PH')
-            : const Locale('en', 'US');
+    final newLocale = _locale.languageCode == 'en'
+        ? const Locale('fil', 'PH')
+        : const Locale('en', 'US');
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(StorageKeys.locale, newLocale.languageCode);
     setState(() {

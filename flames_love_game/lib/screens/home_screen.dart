@@ -189,7 +189,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// Picks a random name from the sample list.
   String _randomName() {
     final random = Random();
-    return AppConstants.sampleNames[random.nextInt(AppConstants.sampleNames.length)];
+    return AppConstants
+        .sampleNames[random.nextInt(AppConstants.sampleNames.length)];
   }
 
   /// Fills the first name field with a random name.
@@ -333,8 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final entry = history[index];
-                      final meaning =
-                          _getLocalizedMeaning(entry.resultLetter);
+                      final meaning = _getLocalizedMeaning(entry.resultLetter);
                       final emoji = meaning?['emoji'] ?? '';
                       final label = meaning?['label'] ?? entry.resultLetter;
 
@@ -369,8 +369,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               icon: Icon(
                                 Icons.share_rounded,
                                 size: 18,
-                                color: colorScheme.primary
-                                    .withValues(alpha: 0.7),
+                                color:
+                                    colorScheme.primary.withValues(alpha: 0.7),
                               ),
                               tooltip: l10n.shareTooltip,
                               onPressed: () {
@@ -549,43 +549,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Semantics(
       label: 'FLAMES legend',
       child: Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
-      children: AppConstants.legendItems.map((item) {
-        final localizedLabel = l10n.legendLabels[item.$1] ?? item.$2;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colorScheme.outlineVariant),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(item.$3, style: const TextStyle(fontSize: 14)),
-              const SizedBox(width: 4),
-              Text(
-                item.$1,
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: colorScheme.primary,
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.center,
+        children: AppConstants.legendItems.map((item) {
+          final localizedLabel = l10n.legendLabels[item.$1] ?? item.$2;
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colorScheme.outlineVariant),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(item.$3, style: const TextStyle(fontSize: 14)),
+                const SizedBox(width: 4),
+                Text(
+                  item.$1,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: colorScheme.primary,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                localizedLabel,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: colorScheme.onSurfaceVariant,
+                const SizedBox(width: 4),
+                Text(
+                  localizedLabel,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -727,7 +727,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(width: 8),
                   Text(
                     l10n.buttonCalculate,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -791,7 +792,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     icon: const Icon(Icons.replay),
                     label: Text(
                       l10n.buttonTryAgain,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: colorScheme.primary,
@@ -816,7 +818,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     icon: const Icon(Icons.share_rounded),
                     label: Text(
                       l10n.buttonShare,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     style: FilledButton.styleFrom(
                       backgroundColor: colorScheme.primary,
