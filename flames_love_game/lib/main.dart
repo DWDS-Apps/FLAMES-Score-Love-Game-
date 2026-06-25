@@ -72,18 +72,13 @@ class _FlamesAppState extends State<FlamesApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a splash-like empty container until preferences are loaded
+    // Show a neutral splash until preferences are loaded.
+    // Uses the default Material theme so no brightness flash occurs
+    // when the user has dark mode saved as their preference.
     if (!_initialized) {
-      return MaterialApp(
+      return const MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(AppColors.seedPink),
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-        ),
-        home: const Scaffold(
+        home: Scaffold(
           body: Center(
             child: Icon(
               Icons.favorite_rounded,
