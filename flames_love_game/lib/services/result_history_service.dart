@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import '../models/result_entry.dart';
 
-/// Service for persisting and retrieving FLAMS result history
+/// Service for persisting and retrieving FLAMES result history
 /// using [SharedPreferences] as the local storage backend.
 ///
 /// Stores up to [maxEntries] recent results, dropping the oldest
