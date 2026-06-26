@@ -46,6 +46,13 @@ void main() {
       expect(l10n.timestampDaysAgo(2), contains('2'));
     });
 
+    test('dateFormat returns a formatted date string', () {
+      final date = DateTime(2026, 6, 26);
+      expect(l10n.dateFormat(date), contains('6'));
+      expect(l10n.dateFormat(date), contains('26'));
+      expect(l10n.dateFormat(date), contains('2026'));
+    });
+
     test('legendLabels covers all six letters', () {
       for (final letter in ['F', 'L', 'A', 'M', 'E', 'S']) {
         expect(l10n.legendLabels, containsPair(letter, isNotEmpty));
@@ -115,6 +122,13 @@ void main() {
       expect(l10n.timestampMinutesAgo(5), contains('5'));
       expect(l10n.timestampHoursAgo(3), contains('3'));
       expect(l10n.timestampDaysAgo(2), contains('2'));
+    });
+
+    test('dateFormat returns a formatted date string', () {
+      final date = DateTime(2026, 6, 26);
+      expect(l10n.dateFormat(date), contains('6'));
+      expect(l10n.dateFormat(date), contains('26'));
+      expect(l10n.dateFormat(date), contains('2026'));
     });
 
     test('legendLabels covers all six letters with Filipino translations', () {

@@ -1,6 +1,5 @@
 /// Application-wide constants for the FLAMES Love Game.
-library;
-
+///
 /// App display configuration constants.
 class AppConstants {
   AppConstants._();
@@ -44,6 +43,13 @@ class AppConstants {
   static const String historySheetKey = 'history-sheet';
   static const String clearHistoryButtonKey = 'clear-history-button';
   static const String emptyHistoryKey = 'empty-history';
+
+  // -- Semantics labels (for screen readers) --
+  /// Semantics label for the FLAMES legend section.
+  static const String legendSemanticsLabel = 'FLAMES legend';
+
+  /// Semantics label for the FLAMES calculation result section.
+  static const String resultSemanticsLabel = 'FLAMES calculation result';
 
   // -- Random name generator --
   static const List<String> sampleNames = [

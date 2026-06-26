@@ -1,12 +1,10 @@
-/// Service for playing sound effects throughout the app.
-///
-/// Wraps the [audioplayers] package and provides simple methods
-/// for playing tap, reveal, and button interaction sounds.
-///
-/// Uses lazy initialization — the first play call creates the
-/// audio player instances automatically.
-library;
-
+// Service for playing sound effects throughout the app.
+//
+// Wraps the [audioplayers] package and provides simple methods
+// for playing tap, reveal, and button interaction sounds.
+//
+// Uses lazy initialization — the first play call creates the
+// audio player instances automatically.
 import 'package:audioplayers/audioplayers.dart';
 
 /// Sound effect types available in the app.

@@ -1,6 +1,4 @@
-/// English (US) localization for the FLAMES Love Game.
-library;
-
+// English (US) localization for the FLAMES Love Game.
 import 'app_localizations.dart';
 
 /// English localization implementation.
@@ -77,6 +75,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String timestampDaysAgo(int days) => '${days}d ago';
+
+  @override
+  String dateFormat(DateTime date) =>
+      '${date.month}/${date.day}/${date.year}';
 
   @override
   String get randomNameTooltip => 'Random name';

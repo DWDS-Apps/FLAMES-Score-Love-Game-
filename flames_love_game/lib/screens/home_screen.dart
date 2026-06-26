@@ -447,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (diff.inDays < 7) return l10n.timestampDaysAgo(diff.inDays);
 
     // Otherwise show date
-    return '${dt.month}/${dt.day}/${dt.year}';
+    return l10n.dateFormat(dt);
   }
 
   @override
@@ -573,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// Builds the FLAMES legend row with letter, emoji, and localized label.
   Widget _buildFlamesLegend(ColorScheme colorScheme, AppLocalizations l10n) {
     return Semantics(
-      label: 'FLAMES legend',
+      label: AppConstants.legendSemanticsLabel,
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -769,7 +769,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// Builds the animated result section with heart particles.
   Widget _buildResult(ColorScheme colorScheme, AppLocalizations l10n) {
     return Semantics(
-      label: 'FLAMES calculation result',
+      label: AppConstants.resultSemanticsLabel,
       child: Column(
         children: [
           // Heart particles overlay

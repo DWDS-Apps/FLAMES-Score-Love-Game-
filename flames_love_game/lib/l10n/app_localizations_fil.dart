@@ -1,6 +1,4 @@
-/// Filipino (Philippines) localization for the FLAMES Love Game.
-library;
-
+// Filipino (Philippines) localization for the FLAMES Love Game.
 import 'app_localizations.dart';
 
 /// Filipino localization implementation.
@@ -78,6 +76,10 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String timestampDaysAgo(int days) => '$days araw ang nakalipas';
+
+  @override
+  String dateFormat(DateTime date) =>
+      '${date.month}/${date.day}/${date.year}';
 
   @override
   String get randomNameTooltip => 'Random na pangalan';

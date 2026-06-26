@@ -1,9 +1,7 @@
-/// Localization strings for the FLAMES Love Game.
-///
-/// Provides English and Filipino translations for all user-facing
-/// strings in the app.
-library;
-
+// Localization strings for the FLAMES Love Game.
+//
+// Provides English and Filipino translations for all user-facing
+// strings in the app.
 import 'package:flutter/material.dart';
 
 import 'app_localizations_en.dart';
@@ -129,6 +127,11 @@ abstract class AppLocalizations {
 
   /// "Xd ago" for timestamps in days.
   String timestampDaysAgo(int days);
+
+  // ── Date formatting ──
+
+  /// Formats a date for display (used for entries older than 7 days).
+  String dateFormat(DateTime date);
 
   // ── Tooltips ──
 
