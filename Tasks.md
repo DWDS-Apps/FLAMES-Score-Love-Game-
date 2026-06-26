@@ -43,6 +43,15 @@
 - [x] Extract `_buildNameField` helper to eliminate duplicate TextFormField code (~70 lines saved)
 - [x] Make integration tests locale-independent (ValueKey finders instead of locale-specific text)
 
+## Code Audit & Maintenance
+- [x] Remove unnecessary `library;` directives from 5 files
+- [x] Extract hardcoded Semantics labels into AppConstants
+- [x] Add localized dateFormat() method to AppLocalizations
+- [x] Replace hardcoded date string in _formatTimestamp with localized version
+- [x] Add unit tests for dateFormat in both EN and FIL locales
+- [x] Run dart analyze — 0 issues ✓
+- [x] All 61 tests passing ✓
+
 ## Backlog
 - [x] Result history with local storage (shared_preferences)
 - [x] Share sheet integration (share_plus)
