@@ -461,98 +461,87 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const SizedBox(height: 32),
-
-              // Header row with theme toggle and locale toggle
+              // Top bar with history, locale, and theme toggle
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Spacer(),
-                  Semantics(
-                    header: true,
-                    label: AppConstants.headerSemanticsTitle,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Semantics(
-                          excludeSemantics: true,
-                          child: Icon(
-                            Icons.favorite_rounded,
-                            size: 48,
-                            color: colorScheme.primary.withValues(alpha: 0.7),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          AppConstants.headerTitle,
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w900,
-                            color: colorScheme.primary,
-                            letterSpacing: 8,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.headerSubtitle,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurfaceVariant,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ],
-                    ),
+                  IconButton(
+                    key: const ValueKey(AppConstants.historyButtonKey),
+                    icon: const Icon(Icons.history_rounded),
+                    tooltip: l10n.historyTooltip,
+                    onPressed: _showHistory,
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  const Spacer(),
-                  // History, locale, and dark mode toggle buttons
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 48),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          key: const ValueKey(AppConstants.historyButtonKey),
-                          icon: const Icon(Icons.history_rounded),
-                          tooltip: l10n.historyTooltip,
-                          onPressed: _showHistory,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        // Locale toggle button
-                        IconButton(
-                          icon: Text(
-                            widget.locale.languageCode.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          tooltip: widget.locale.languageCode == 'en'
-                              ? l10n.switchToFilipino
-                              : l10n.switchToEnglish,
-                          onPressed: widget.onToggleLocale,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          icon: Icon(
-                            widget.isDarkMode
-                                ? Icons.light_mode
-                                : Icons.dark_mode,
-                          ),
-                          tooltip: widget.isDarkMode
-                              ? l10n.lightModeTooltip
-                              : l10n.darkModeTooltip,
-                          onPressed: widget.onToggleDarkMode,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ],
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Text(
+                      widget.locale.languageCode.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
+                    tooltip: widget.locale.languageCode == 'en'
+                        ? l10n.switchToFilipino
+                        : l10n.switchToEnglish,
+                    onPressed: widget.onToggleLocale,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Icon(
+                      widget.isDarkMode
+                          ? Icons.light_mode
+                          : Icons.dark_mode,
+                    ),
+                    tooltip: widget.isDarkMode
+                        ? l10n.lightModeTooltip
+                        : l10n.darkModeTooltip,
+                    onPressed: widget.onToggleDarkMode,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+
+              // Header
+              Semantics(
+                header: true,
+                label: AppConstants.headerSemanticsTitle,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Semantics(
+                      excludeSemantics: true,
+                      child: Icon(
+                        Icons.favorite_rounded,
+                        size: 48,
+                        color: colorScheme.primary.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppConstants.headerTitle,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w900,
+                        color: colorScheme.primary,
+                        letterSpacing: 8,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.headerSubtitle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurfaceVariant,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 32),
 

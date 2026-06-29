@@ -37,13 +37,14 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 abstract class AppLocalizations {
   /// The locales this app supports.
   static const List<Locale> supportedLocales = [
-    Locale('en', 'US'),
-    Locale('fil', 'PH'),
+    Locale('en'),
+    Locale('fil'),
   ];
 
   /// Convenience method to look up localizations from context.
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+    return Localizations.of<AppLocalizations>(context, AppLocalizations) ??
+        AppLocalizationsEn();
   }
 
   // ── App metadata ──

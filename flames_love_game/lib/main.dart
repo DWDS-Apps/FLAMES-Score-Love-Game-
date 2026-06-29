@@ -27,7 +27,7 @@ class FlamesApp extends StatefulWidget {
 class _FlamesAppState extends State<FlamesApp> {
   bool _useDarkMode = false;
   bool _initialized = false;
-  Locale _locale = const Locale('en', 'US');
+  Locale _locale = const Locale('en');
 
   @override
   void initState() {
@@ -42,8 +42,8 @@ class _FlamesAppState extends State<FlamesApp> {
       _useDarkMode = prefs.getBool(StorageKeys.darkMode) ?? false;
       final localeCode = prefs.getString(StorageKeys.locale) ?? 'en';
       _locale = localeCode == 'fil'
-          ? const Locale('fil', 'PH')
-          : const Locale('en', 'US');
+          ? const Locale('fil')
+          : const Locale('en');
       _initialized = true;
     });
   }
@@ -61,8 +61,8 @@ class _FlamesAppState extends State<FlamesApp> {
   /// Toggles between English and Filipino locale and persists the preference.
   Future<void> _toggleLocale() async {
     final newLocale = _locale.languageCode == 'en'
-        ? const Locale('fil', 'PH')
-        : const Locale('en', 'US');
+        ? const Locale('fil')
+        : const Locale('en');
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(StorageKeys.locale, newLocale.languageCode);
     setState(() {
@@ -72,24 +72,6 @@ class _FlamesAppState extends State<FlamesApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a neutral splash until preferences are loaded.
-    // Uses the default Material theme so no brightness flash occurs
-    // when the user has dark mode saved as their preference.
-    if (!_initialized) {
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(
-            child: Icon(
-              Icons.favorite_rounded,
-              size: 64,
-              color: Colors.pink,
-            ),
-          ),
-        ),
-      );
-    }
-
     final brightness = _useDarkMode ? Brightness.dark : Brightness.light;
     final colorScheme = ColorScheme.fromSeed(
       seedColor: const Color(AppColors.seedPink),
@@ -106,6 +88,14 @@ class _FlamesAppState extends State<FlamesApp> {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == locale?.languageCode) {
+            return supported;
+          }
+        }
+        return const Locale('en');
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(AppColors.seedPink),
@@ -129,12 +119,22 @@ class _FlamesAppState extends State<FlamesApp> {
         ),
       ),
       themeMode: _useDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: HomeScreen(
-        isDarkMode: _useDarkMode,
-        onToggleDarkMode: _toggleDarkMode,
-        locale: _locale,
-        onToggleLocale: _toggleLocale,
-      ),
+      home: _initialized
+          ? HomeScreen(
+              isDarkMode: _useDarkMode,
+              onToggleDarkMode: _toggleDarkMode,
+              locale: _locale,
+              onToggleLocale: _toggleLocale,
+            )
+          : const Scaffold(
+              body: Center(
+                child: Icon(
+                  Icons.favorite_rounded,
+                  size: 64,
+                  color: Colors.pink,
+                ),
+              ),
+            ),
     );
   }
 }
