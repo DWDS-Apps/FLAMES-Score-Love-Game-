@@ -13,7 +13,6 @@ export FLUTTER_ROOT=/root/flutter  # Adjust for your environment
 Builds the app in profile mode (includes performance tracing, no debug assertions):
 
 ```bash
-cd flames_love_game
 flutter run --profile
 ```
 

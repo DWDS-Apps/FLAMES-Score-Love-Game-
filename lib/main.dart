@@ -28,6 +28,7 @@ class _FlamesAppState extends State<FlamesApp> {
   bool _useDarkMode = false;
   bool _initialized = false;
   Locale _locale = const Locale('en');
+  SharedPreferences? _prefs;
 
   @override
   void initState() {
@@ -37,10 +38,10 @@ class _FlamesAppState extends State<FlamesApp> {
 
   /// Loads the saved dark mode and locale preferences from local storage.
   Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
+    _prefs = await SharedPreferences.getInstance();
     setState(() {
-      _useDarkMode = prefs.getBool(StorageKeys.darkMode) ?? false;
-      final localeCode = prefs.getString(StorageKeys.locale) ?? 'en';
+      _useDarkMode = _prefs!.getBool(StorageKeys.darkMode) ?? false;
+      final localeCode = _prefs!.getString(StorageKeys.locale) ?? 'en';
       _locale = localeCode == 'fil'
           ? const Locale('fil')
           : const Locale('en');
@@ -51,8 +52,7 @@ class _FlamesAppState extends State<FlamesApp> {
   /// Toggles dark mode and persists the preference.
   Future<void> _toggleDarkMode() async {
     final newValue = !_useDarkMode;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(StorageKeys.darkMode, newValue);
+    await _prefs!.setBool(StorageKeys.darkMode, newValue);
     setState(() {
       _useDarkMode = newValue;
     });
@@ -63,8 +63,7 @@ class _FlamesAppState extends State<FlamesApp> {
     final newLocale = _locale.languageCode == 'en'
         ? const Locale('fil')
         : const Locale('en');
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(StorageKeys.locale, newLocale.languageCode);
+    await _prefs!.setString(StorageKeys.locale, newLocale.languageCode);
     setState(() {
       _locale = newLocale;
     });

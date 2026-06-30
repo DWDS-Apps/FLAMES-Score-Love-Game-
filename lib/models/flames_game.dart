@@ -98,6 +98,9 @@ class FlamesGame {
     return flamesMeanings[letter];
   }
 
+  /// Matches a single lowercase letter a-z.
+  static final _letterRegex = RegExp(r'^[a-z]$');
+
   /// Counts letter frequencies (a-z only, case-normalized).
   ///
   /// Ignores non-alphabetic characters and spaces.
@@ -105,7 +108,7 @@ class FlamesGame {
     final counts = <String, int>{};
     for (var i = 0; i < input.length; i++) {
       final char = input[i];
-      if (RegExp(r'^[a-z]$').hasMatch(char)) {
+      if (_letterRegex.hasMatch(char)) {
         counts[char] = (counts[char] ?? 0) + 1;
       }
     }

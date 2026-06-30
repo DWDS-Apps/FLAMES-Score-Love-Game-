@@ -9,6 +9,8 @@ import '../models/result_entry.dart';
 import '../services/audio_service.dart';
 import '../services/result_history_service.dart';
 import '../widgets/heart_particles.dart';
+import '../widgets/history_sheet.dart';
+import '../widgets/name_field.dart';
 import '../widgets/result_card.dart';
 
 /// The main screen of the FLAMES Love Game.
@@ -136,33 +138,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _name2Controller.clear();
   }
 
-  /// Shares the current result via the system share sheet.
-  Future<void> _shareResult() async {
-    _audioService.playButtonTap();
-    if (_resultLetter == null || _name1 == null || _name2 == null) return;
-
-    final l10n = AppLocalizations.of(context);
-    final meaning = _getLocalizedMeaning(_resultLetter!);
-    if (meaning == null) return;
-
-    final text = l10n.shareResultText(
-      _name1!,
-      _name2!,
-      _resultLetter!,
-      meaning['label']!,
-      meaning['emoji']!,
-      meaning['description']!,
-    );
-
-    try {
-      await Share.share(text.trim());
-    } catch (_) {
-      // Silently ignore share errors — sharing is non-critical.
-    }
-  }
-
-  /// Shares a history [entry] via the system share sheet.
-  void _shareEntry(ResultEntry entry) {
+  /// Shares a result [entry] via the system share sheet.
+  Future<void> _shareEntry(ResultEntry entry) async {
     final l10n = AppLocalizations.of(context);
     final meaning = _getLocalizedMeaning(entry.resultLetter);
     if (meaning == null) return;
@@ -177,10 +154,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     try {
-      Share.share(text.trim());
-    } catch (_) {
-      // Silently ignore share errors — sharing is non-critical.
-    }
+      await SharePlus.instance.share(ShareParams(text: text.trim()));
+    } catch (_) {}
+  }
+
+  /// Shares the current result via the system share sheet.
+  Future<void> _shareResult() async {
+    _audioService.playButtonTap();
+    if (_resultLetter == null || _name1 == null || _name2 == null) return;
+    await _shareEntry(ResultEntry(
+      name1: _name1!,
+      name2: _name2!,
+      resultLetter: _resultLetter!,
+      timestamp: DateTime.now(),
+    ));
   }
 
   /// Clears the first name field.
@@ -205,14 +192,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _fillRandomName1() {
     _audioService.playButtonTap();
     _name1Controller.text = _randomName();
-    setState(() {});
   }
 
   /// Fills the second name field with a random name.
   void _fillRandomName2() {
     _audioService.playButtonTap();
     _name2Controller.text = _randomName();
-    setState(() {});
   }
 
   /// Shows a modal bottom sheet with the result history.
@@ -228,226 +213,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (sheetContext) {
-        return _buildHistorySheet(sheetContext, history);
-      },
+      builder: (_) => HistorySheet(
+        history: history,
+        historyService: _historyService,
+        onEntryTap: (entry) {
+          _name1Controller.text = entry.name1;
+          _name2Controller.text = entry.name2;
+          _calculate();
+        },
+        onShareEntry: _shareEntry,
+      ),
     );
-  }
-
-  /// Builds the history bottom sheet content.
-  Widget _buildHistorySheet(BuildContext context, List<ResultEntry> history) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DraggableScrollableSheet(
-      key: const ValueKey(AppConstants.historySheetKey),
-      expand: false,
-      initialChildSize: 0.55,
-      minChildSize: 0.3,
-      maxChildSize: 0.85,
-      builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Title row
-              Row(
-                children: [
-                  Icon(Icons.history_rounded,
-                      color: colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.historyTitle,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (history.isNotEmpty)
-                    TextButton.icon(
-                      key: const ValueKey(AppConstants.clearHistoryButtonKey),
-                      onPressed: () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text(l10n.historyClearConfirmTitle),
-                            content: Text(l10n.historyClearConfirmBody),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(false),
-                                child: Text(l10n.historyClearCancel),
-                              ),
-                              FilledButton(
-                                onPressed: () => Navigator.of(ctx).pop(true),
-                                child: Text(l10n.historyClearConfirmAction),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (confirmed != true) return;
-                        await _historyService.clearHistory();
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.delete_sweep, size: 18),
-                      label: Text(l10n.historyClearAll),
-                      style: TextButton.styleFrom(
-                        foregroundColor: colorScheme.error,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Divider(),
-              const SizedBox(height: 4),
-
-              // History list
-              if (history.isEmpty)
-                Expanded(
-                  child: Center(
-                    key: const ValueKey(AppConstants.emptyHistoryKey),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 48,
-                          color: colorScheme.onSurfaceVariant
-                              .withValues(alpha: 0.4),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          l10n.historyEmptyTitle,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.historyEmptySubtitle,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else
-                Expanded(
-                  child: ListView.separated(
-                    controller: scrollController,
-                    itemCount: history.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final entry = history[index];
-                      final meaning = _getLocalizedMeaning(entry.resultLetter);
-                      final emoji = meaning?['emoji'] ?? '';
-                      final label = meaning?['label'] ?? entry.resultLetter;
-
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: colorScheme.primaryContainer,
-                          child: Text(
-                            entry.resultLetter,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          '${entry.name1} ♥ ${entry.name2}',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          '$emoji $label  •  ${_formatTimestamp(entry.timestamp, l10n)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                Icons.share_rounded,
-                                size: 18,
-                                color:
-                                    colorScheme.primary.withValues(alpha: 0.7),
-                              ),
-                              tooltip: l10n.shareTooltip,
-                              onPressed: () {
-                                _shareEntry(entry);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.close,
-                                size: 18,
-                                color: colorScheme.onSurfaceVariant
-                                    .withValues(alpha: 0.6),
-                              ),
-                              onPressed: () async {
-                                await _historyService.removeEntry(index);
-                                if (!context.mounted) return;
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          // Load the history entry's names
-                          Navigator.of(context).pop();
-                          _name1Controller.text = entry.name1;
-                          _name2Controller.text = entry.name2;
-                          _calculate();
-                        },
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  /// Formats a timestamp to a short, readable string using localized strings.
-  String _formatTimestamp(DateTime dt, AppLocalizations l10n) {
-    final now = DateTime.now();
-    final diff = now.difference(dt);
-
-    if (diff.inMinutes < 1) return l10n.timestampJustNow;
-    if (diff.inHours < 1) return l10n.timestampMinutesAgo(diff.inMinutes);
-    if (diff.inDays < 1) return l10n.timestampHoursAgo(diff.inHours);
-    if (diff.inDays < 7) return l10n.timestampDaysAgo(diff.inDays);
-
-    // Otherwise show date
-    return l10n.dateFormat(dt);
   }
 
   @override
@@ -612,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Column(
         children: [
           // Name 1
-          _buildNameField(
+          NameField(
             fieldKey: AppConstants.name1FieldKey,
             controller: _name1Controller,
             labelText: l10n.labelName1,
@@ -624,6 +400,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             textInputAction: TextInputAction.next,
             colorScheme: colorScheme,
             l10n: l10n,
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 20),
 
@@ -642,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
 
           // Name 2
-          _buildNameField(
+          NameField(
             fieldKey: AppConstants.name2FieldKey,
             controller: _name2Controller,
             labelText: l10n.labelName2,
@@ -655,6 +432,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             onFieldSubmitted: (_) => _calculate(),
             colorScheme: colorScheme,
             l10n: l10n,
+            onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 32),
 
@@ -690,68 +468,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 40),
         ],
       ),
-    );
-  }
-
-  /// Builds a name input field with shuffle (random) and clear buttons.
-  Widget _buildNameField({
-    required String fieldKey,
-    required TextEditingController controller,
-    required String labelText,
-    required String hintText,
-    required IconData prefixIcon,
-    required String randomKey,
-    required VoidCallback onRandom,
-    required VoidCallback onClear,
-    required TextInputAction textInputAction,
-    void Function(String)? onFieldSubmitted,
-    required ColorScheme colorScheme,
-    required AppLocalizations l10n,
-  }) {
-    return TextFormField(
-      key: ValueKey(fieldKey),
-      controller: controller,
-      textCapitalization: TextCapitalization.words,
-      maxLength: AppConstants.maxNameLength,
-      decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        prefixIcon: Icon(prefixIcon),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              key: ValueKey(randomKey),
-              icon: const Icon(Icons.shuffle, size: 18),
-              tooltip: l10n.randomNameTooltip,
-              onPressed: onRandom,
-            ),
-            if (controller.text.isNotEmpty)
-              IconButton(
-                icon: const Icon(Icons.close, size: 18),
-                onPressed: () {
-                  onClear();
-                  setState(() {});
-                },
-              ),
-          ],
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        filled: true,
-        fillColor: colorScheme.surfaceContainerLow,
-        counterText: '',
-      ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return l10n.validationEmpty;
-        }
-        return null;
-      },
-      textInputAction: textInputAction,
-      onFieldSubmitted: onFieldSubmitted,
-      onChanged: (_) => setState(() {}),
     );
   }
 
