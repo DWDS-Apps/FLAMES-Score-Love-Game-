@@ -1,4 +1,4 @@
-package com.dwdsapps.flames_love_game
+package com.dwds.flames_love_score
 
 import io.flutter.embedding.android.FlutterActivity
 

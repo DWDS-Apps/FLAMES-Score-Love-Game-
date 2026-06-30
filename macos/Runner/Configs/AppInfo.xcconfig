@@ -8,7 +8,7 @@
 PRODUCT_NAME = flames_love_game
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.dwdsapps.flamesLoveGame
+PRODUCT_BUNDLE_IDENTIFIER = com.dwds.flamesLoveScore
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.dwdsapps. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.dwds. All rights reserved.

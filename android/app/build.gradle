@@ -12,7 +12,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.dwdsapps.flames_love_game"
+    namespace = "com.dwds.flames_love_score"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
